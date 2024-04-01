@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Homepage.iml" filepath="$PROJECT_DIR$/.idea/Homepage.iml" />
+      <module fileurl="file://$PROJECT_DIR$/singpass.iml" filepath="$PROJECT_DIR$/singpass.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/singpass_android.iml" filepath="$PROJECT_DIR$/android/singpass_android.iml" />
     </modules>
   </component>
 </project>
