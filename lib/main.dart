@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:singpass/login_screen.dart';
 import 'package:singpass/register_screen.dart';
+import 'package:singpass/homepage.dart';
+import 'package:singpass/personal.dart';
+
+
 
 void main() {
   runApp(MyApp());
@@ -19,6 +23,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => HomeScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
+        '/homepage': (context) => Homepage(),
+        '/personal': (context) => FormInputPage(),
       },
     );
   }

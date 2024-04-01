@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:singpass/register_screen.dart' as registerScreen;
+import 'package:singpass/homepage.dart';
+
 
 class LoginScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -36,9 +38,7 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Implement login logic here
-                    }
+                    Navigator.pushNamed(context, '/homepage');
                   },
                   style: ButtonStyle(
                     backgroundColor:
