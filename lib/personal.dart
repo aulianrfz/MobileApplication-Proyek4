@@ -60,12 +60,6 @@ class _FormInputPageState extends State<FormInputPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
             Expanded(
               child: Text(
                 'Personal',

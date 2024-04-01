@@ -106,7 +106,7 @@ class Homepage extends StatelessWidget {
                     text: 'Personal',
                     color: const Color(0xFFFA3C81),
                     onTap: () {
-                      // Add your on-tap logic here
+                      Navigator.pushNamed(context, '/personal');
                     },
                   ),
 
