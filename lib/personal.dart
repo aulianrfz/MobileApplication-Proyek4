@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class FormInputPage extends StatefulWidget {
   @override
@@ -10,16 +11,11 @@ class _FormInputPageState extends State<FormInputPage> {
   TextEditingController _nikController = TextEditingController();
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
-  DateTime? _selectedDate;
   TextEditingController _addressController = TextEditingController();
-  TextEditingController _cityController = TextEditingController();
   TextEditingController _nationalityController = TextEditingController();
-  TextEditingController _genderController = TextEditingController();
+  TextEditingController _selectedCityController = TextEditingController();
+  TextEditingController _selectedGenderController = TextEditingController();
   TextEditingController _religionController = TextEditingController();
-  String _selectedCity = '';
-  String _selectedNationality = '';
-  String _selectedGender = '';
-  String _selectedReligion = '';
 
   List<String> _cities = [
     'New York',
@@ -27,16 +23,7 @@ class _FormInputPageState extends State<FormInputPage> {
     'Chicago',
     'Houston',
     'Phoenix',
-    // Tambahkan kota lain sesuai kebutuhan
-  ];
-
-  List<String> _nationalities = [
-    'American',
-    'British',
-    'Chinese',
-    'Indian',
-    'Japanese',
-    // Tambahkan kewarganegaraan lain sesuai kebutuhan
+    // Add other cities as needed
   ];
 
   List<String> _genders = [
@@ -51,326 +38,142 @@ class _FormInputPageState extends State<FormInputPage> {
     'Hinduism',
     'Buddhism',
     'Judaism',
-    // Tambahkan agama lain sesuai kebutuhan
+    // Add other religions as needed
   ];
+
+  String _selectedCity = '';
+  String _selectedGender = '';
+  String _selectedReligion = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Personal',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                // Tambahkan fungsi untuk mengedit
-              },
-            ),
-          ],
-        ),
-        centerTitle: true,
+        title: Text('Personal Information'),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                _buildDataContainer(
-                  'NIK',
-                  TextFormField(
-                    controller: _nikController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your NIK';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                _buildNameContainers(),
-                _buildDateInputContainer(),
-                _buildDataContainer(
-                  'Address',
-                  TextFormField(
-                    controller: _addressController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your Address';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                _buildDataContainer(
-                  'City',
-                  DropdownButtonFormField(
-                    value: _selectedCity.isNotEmpty ? _selectedCity : null,
-                    items: _cities.map((String city) {
-                      return DropdownMenuItem<String>(
-                        value: city,
-                        child: Text(city),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        _selectedCity = value ?? '';
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select your City';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                _buildDataContainer(
-                  'Nationality',
-                  DropdownButtonFormField(
-                    value: _selectedNationality.isNotEmpty ? _selectedNationality : null,
-                    items: _nationalities.map((String nationality) {
-                      return DropdownMenuItem<String>(
-                        value: nationality,
-                        child: Text(nationality),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        _selectedNationality = value ?? '';
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select your Nationality';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                _buildDataContainer(
-                  'Gender',
-                  DropdownButtonFormField(
-                    value: _selectedGender.isNotEmpty ? _selectedGender : null,
-                    items: _genders.map((String gender) {
-                      return DropdownMenuItem<String>(
-                        value: gender,
-                        child: Text(gender),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        _selectedGender = value ?? '';
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select your Gender';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                _buildDataContainer(
-                  'Religion',
-                  DropdownButtonFormField(
-                    value: _selectedReligion.isNotEmpty ? _selectedReligion : null,
-                    items: _religions.map((String religion) {
-                      return DropdownMenuItem<String>(
-                        value: religion,
-                        child: Text(religion),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        _selectedReligion = value ?? '';
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select your Religion';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: GestureDetector(
-                      onTap: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Process data
-                          // For example, save the data to a database
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Processing Data')),
-                          );
-                        }
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.green,
-                        ),
-                        child: Icon(Icons.check, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                controller: _nikController,
+                decoration: InputDecoration(labelText: 'NIK'),
+                validator: (value) => _validateInput(value, 'NIK'),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _firstNameController,
+                decoration: InputDecoration(labelText: 'First Name'),
+                validator: (value) => _validateInput(value, 'First Name'),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _lastNameController,
+                decoration: InputDecoration(labelText: 'Last Name'),
+                validator: (value) => _validateInput(value, 'Last Name'),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _addressController,
+                decoration: InputDecoration(labelText: 'Address'),
+                validator: (value) => _validateInput(value, 'Address'),
+              ),
+              SizedBox(height: 16.0),
+              DropdownButtonFormField(
+                value: _selectedCity.isNotEmpty ? _selectedCity : null,
+                items: _cities.map((String city) {
+                  return DropdownMenuItem<String>(
+                    value: city,
+                    child: Text(city),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedCity = value ?? '';
+                  });
+                },
+                decoration: InputDecoration(labelText: 'City'),
+                validator: (value) => _validateInput(value, 'City'),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _nationalityController,
+                decoration: InputDecoration(labelText: 'Nationality'),
+                validator: (value) => _validateInput(value, 'Nationality'),
+              ),
+              SizedBox(height: 16.0),
+              DropdownButtonFormField(
+                value: _selectedGender.isNotEmpty ? _selectedGender : null,
+                items: _genders.map((String gender) {
+                  return DropdownMenuItem<String>(
+                    value: gender,
+                    child: Text(gender),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedGender = value ?? '';
+                  });
+                },
+                decoration: InputDecoration(labelText: 'Gender'),
+                validator: (value) => _validateInput(value, 'Gender'),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _religionController,
+                decoration: InputDecoration(labelText: 'Religion'),
+                validator: (value) => _validateInput(value, 'Religion'),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _submitForm();
+                  }
+                },
+                child: Text('Save'),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildNameContainers() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildDataContainer(
-            'First Name',
-            TextFormField(
-              controller: _firstNameController,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your First Name';
-                }
-                return null;
-              },
-            ),
-          ),
-        ),
-        SizedBox(width: 8),
-        Expanded(
-          child: _buildDataContainer(
-            'Last Name',
-            TextFormField(
-              controller: _lastNameController,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your Last Name';
-                }
-                return null;
-              },
-            ),
-          ),
-        ),
-      ],
+  void _submitForm() async {
+    final response = await http.post(
+      Uri.parse('http://localhost:8000/api/personals'), // Adjust with the correct endpoint
+      body: {
+        'nik': _nikController.text,
+        'first_name': _firstNameController.text,
+        'last_name': _lastNameController.text,
+        'address': _addressController.text,
+        'city': _selectedCity,
+        'nationality': _nationalityController.text,
+        'gender': _selectedGender,
+        'religion': _religionController.text,
+      },
     );
-  }
 
-  Widget _buildDateInputContainer() {
-    return _buildDataContainer(
-      'Birthday',
-      Row(
-        children: [
-          Expanded(
-            child: TextFormField(
-              controller: TextEditingController(
-                text: _selectedDate != null
-                    ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-                    : '',
-              ),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select your Birthday';
-                }
-                return null;
-              },
-              readOnly: true,
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.calendar_today),
-            onPressed: () {
-              _selectDate(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDataContainer(String labelText, Widget child) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          labelText,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 4),
-        Container(
-          margin: EdgeInsets.symmetric(vertical: 8.0),
-          padding: EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          child: child,
-        ),
-      ],
-    );
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data saved successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save data')),
+      );
     }
+  }
+
+  String? _validateInput(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your $fieldName';
+    }
+    return null;
   }
 }
 
