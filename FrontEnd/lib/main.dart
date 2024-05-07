@@ -7,6 +7,9 @@ import 'package:singpass/history.dart';
 import 'package:singpass/work.dart';
 import 'package:singpass/education.dart';
 import 'package:singpass/setting.dart';
+import 'package:singpass/ortu.dart';
+import 'package:singpass/mother.dart';
+import 'package:singpass/father.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,6 +34,9 @@ class MyApp extends StatelessWidget {
         '/history': (context) => HistoryPage(),
         '/education': (context) => EducationPage(),
         '/work': (context) => WorkPage(),
+        '/ortu': (context) => FormOrtu(),
+        '/mother': (context) => FormMother(),
+        '/father': (context) => FormFather(),
       },
     );
   }
