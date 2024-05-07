@@ -3,8 +3,10 @@ import 'package:singpass/login_screen.dart';
 import 'package:singpass/register_screen.dart';
 import 'package:singpass/homepage.dart';
 import 'package:singpass/personal.dart';
-
-
+import 'package:singpass/history.dart';
+import 'package:singpass/work.dart';
+import 'package:singpass/education.dart';
+import 'package:singpass/setting.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,6 +27,10 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/homepage': (context) => Homepage(),
         '/personal': (context) => FormInputPage(),
+        '/setting': (context) => SettingPage(),
+        '/history': (context) => HistoryPage(),
+        '/education': (context) => EducationPage(),
+        '/work': (context) => WorkPage(),
       },
     );
   }

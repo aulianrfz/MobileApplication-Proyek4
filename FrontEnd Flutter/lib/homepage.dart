@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:singpass/personal.dart';
 
-
 class Homepage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -115,7 +114,7 @@ class Homepage extends StatelessWidget {
                     text: 'Works',
                     color: const Color(0xFF996AFD),
                     onTap: () {
-                      // Add your on-tap logic here
+                      Navigator.pushNamed(context, '/work');
                     },
                   ),
 
@@ -124,7 +123,7 @@ class Homepage extends StatelessWidget {
                     text: 'Education',
                     color: const Color(0xFFB5F16A),
                     onTap: () {
-                      // Add your on-tap logic here
+                      Navigator.pushNamed(context, '/education');
                     },
                   ),
 
@@ -185,6 +184,7 @@ class Homepage extends StatelessWidget {
                   size: 35,
                 ),
                 onPressed: () {
+                  Navigator.pushNamed(context, '/history');
                   // Add your on-tap logic here
                 },
               ),
@@ -195,7 +195,8 @@ class Homepage extends StatelessWidget {
                   size: 35,
                 ),
                 onPressed: () {
-                  // Add your on-tap logic here
+                  Navigator.pushNamed(
+                      context, '/setting'); // Navigasi ke laman /setting
                 },
               ),
             ],

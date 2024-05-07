@@ -145,7 +145,8 @@ class _FormInputPageState extends State<FormInputPage> {
 
   void _submitForm() async {
     final response = await http.post(
-      Uri.parse('http://localhost:8000/api/personals'), // Adjust with the correct endpoint
+      Uri.parse(
+          'http://localhost:8000/api/personals'), // Adjust with the correct endpoint
       body: {
         'nik': _nikController.text,
         'first_name': _firstNameController.text,

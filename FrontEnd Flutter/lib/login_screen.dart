@@ -33,7 +33,8 @@ class LoginScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 40),
-                buildTextField('Email', isPassword: false, controller: _emailController),
+                buildTextField('Email',
+                    isPassword: false, controller: _emailController),
                 SizedBox(height: 20),
                 buildPasswordField('Password', controller: _passwordController),
                 SizedBox(height: 20),
@@ -42,11 +43,12 @@ class LoginScreen extends StatelessWidget {
                     _login(context);
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-                    minimumSize: MaterialStateProperty.all<Size>(Size(321, 51.91)),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue),
+                    minimumSize:
+                        MaterialStateProperty.all<Size>(Size(321, 51.91)),
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                        EdgeInsets.symmetric(vertical: 15)
-                    ),
+                        EdgeInsets.symmetric(vertical: 15)),
                   ),
                   child: Text(
                     'Login',
@@ -64,7 +66,8 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget buildTextField(String label, {bool isPassword = false, required TextEditingController controller}) {
+  Widget buildTextField(String label,
+      {bool isPassword = false, required TextEditingController controller}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -98,7 +101,8 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget buildPasswordField(String label, {required TextEditingController controller}) {
+  Widget buildPasswordField(String label,
+      {required TextEditingController controller}) {
     bool _obscureText = true;
 
     return Column(
@@ -164,7 +168,8 @@ class LoginScreen extends StatelessWidget {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text('Login Failed'),
-                content: Text('An error occurred during login. Please try again later.'),
+                content: Text(
+                    'An error occurred during login. Please try again later.'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
@@ -184,7 +189,8 @@ class LoginScreen extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text('An error occurred during login. Please try again later.'),
+              content: Text(
+                  'An error occurred during login. Please try again later.'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
