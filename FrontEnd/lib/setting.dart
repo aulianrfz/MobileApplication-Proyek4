@@ -12,8 +12,6 @@ class _SettingPageState extends State<SettingPage> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
-  TextEditingController _currentPasswordController = TextEditingController();
-  TextEditingController _newPasswordController = TextEditingController();
 
   @override
   void initState() {
@@ -46,6 +44,35 @@ class _SettingPageState extends State<SettingPage> {
     } else {
       print('Token not found');
     }
+  }
+
+  Future<void> _showLogoutConfirmationDialog() async {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Logout Confirmation'),
+        content: Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () async {
+              // Clear token and navigate to HomeScreen
+              final SharedPreferences prefs =
+                  await SharedPreferences.getInstance();
+              prefs.remove('token');
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/',
+                (route) => false,
+              );
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -98,6 +125,11 @@ class _SettingPageState extends State<SettingPage> {
                 onPressed: _updateProfile,
                 child: Text('Save Changes'),
               ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _showLogoutConfirmationDialog,
+                child: Text('Logout'),
+              ),
             ],
           ),
         ),
@@ -106,39 +138,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   void _updateProfile() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('token');
-
-    if (token != null) {
-      final response = await http.put(
-        Uri.parse('http://localhost:8000/api/profile'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'name': _nameController.text,
-          'email': _emailController.text,
-          'phone': _phoneController.text,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile updated successfully')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update profile')),
-        );
-        print('Failed to update profile: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Token not found')),
-      );
-    }
+    // Your profile update logic here
   }
 }
 

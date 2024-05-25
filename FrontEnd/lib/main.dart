@@ -35,8 +35,8 @@ class MyApp extends StatelessWidget {
         '/education': (context) => EducationPage(),
         '/work': (context) => WorkPage(),
         '/ortu': (context) => FormOrtu(),
-        '/mother': (context) => FormMother(),
-        '/father': (context) => FormFather(),
+        '/mother': (context) => MotherFormInputPage(),
+        '/father': (context) => FatherFormInputPage(),
       },
     );
   }

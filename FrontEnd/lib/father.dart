@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class FormFather extends StatefulWidget {
+class FatherFormInputPage extends StatefulWidget {
   @override
-  _FormMotherState createState() => _FormMotherState();
+  _FatherFormInputPageState createState() => _FatherFormInputPageState();
 }
 
-class _FormMotherState extends State<FormFather> {
+class _FatherFormInputPageState extends State<FatherFormInputPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _nikController = TextEditingController();
-  TextEditingController _firstNameController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _nationalityController = TextEditingController();
-  TextEditingController _selectedCityController = TextEditingController();
-  TextEditingController _selectedGenderController = TextEditingController();
-  TextEditingController _religionController = TextEditingController();
+  final TextEditingController _nikController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _selectedCityController = TextEditingController();
+  final TextEditingController _nationalityController = TextEditingController();
+  final TextEditingController _selectedGenderController =
+      TextEditingController();
+  final TextEditingController _religionController = TextEditingController();
 
   List<String> _cities = [
     'New York',
@@ -45,6 +48,46 @@ class _FormMotherState extends State<FormFather> {
   String _selectedReligion = '';
 
   @override
+  void initState() {
+    super.initState();
+    // Fetch data when the page loads
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('http://localhost:8000/api/fathers'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body)['data'];
+        setState(() {
+          _nikController.text = responseData['nik'];
+          _nameController.text = responseData['name'];
+          _addressController.text = responseData['address'];
+          _selectedCity = responseData['city'];
+          _nationalityController.text = responseData['nationality'];
+          _selectedGender = responseData['gender'];
+          _religionController.text = responseData['religion'];
+        });
+      } else {
+        // Handle if failed to fetch data from backend
+        print('Failed to fetch data: ${response.statusCode}');
+      }
+    } else {
+      // Handle if token not found
+      print('Token not found');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -57,27 +100,22 @@ class _FormMotherState extends State<FormFather> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(height: 16.0),
-              Text(
-                'Mother Information',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              TextFormField(
-                controller: _firstNameController,
-                decoration: InputDecoration(labelText: 'Father Name'),
-                validator: (value) => _validateInput(value, 'name'),
-              ),
-              SizedBox(height: 16.0),
               TextFormField(
                 controller: _nikController,
-                decoration: InputDecoration(labelText: 'Father NIK'),
-                validator: (value) => _validateInput(value, 'nik'),
+                decoration: InputDecoration(labelText: 'NIK'),
+                validator: (value) => _validateInput(value, 'NIK'),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+                validator: (value) => _validateInput(value, 'Name'),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _addressController,
-                decoration: InputDecoration(labelText: 'Father Address'),
-                validator: (value) => _validateInput(value, 'address'),
+                decoration: InputDecoration(labelText: 'Address'),
+                validator: (value) => _validateInput(value, 'Address'),
               ),
               SizedBox(height: 16.0),
               DropdownButtonFormField(
@@ -93,14 +131,14 @@ class _FormMotherState extends State<FormFather> {
                     _selectedCity = value ?? '';
                   });
                 },
-                decoration: InputDecoration(labelText: 'Father City'),
-                validator: (value) => _validateInput(value, 'city'),
+                decoration: InputDecoration(labelText: 'City'),
+                validator: (value) => _validateInput(value, 'City'),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _nationalityController,
-                decoration: InputDecoration(labelText: 'Father Nationality'),
-                validator: (value) => _validateInput(value, 'nationality'),
+                decoration: InputDecoration(labelText: 'Nationality'),
+                validator: (value) => _validateInput(value, 'Nationality'),
               ),
               SizedBox(height: 16.0),
               DropdownButtonFormField(
@@ -116,20 +154,31 @@ class _FormMotherState extends State<FormFather> {
                     _selectedGender = value ?? '';
                   });
                 },
-                decoration: InputDecoration(labelText: 'Father Gender'),
-                validator: (value) => _validateInput(value, 'gender'),
+                decoration: InputDecoration(labelText: 'Gender'),
+                validator: (value) => _validateInput(value, 'Gender'),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _religionController,
-                decoration: InputDecoration(labelText: 'Father Religion'),
-                validator: (value) => _validateInput(value, 'religion'),
+                decoration: InputDecoration(labelText: 'Religion'),
+                validator: (value) => _validateInput(value, 'Religion'),
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    _submitForm();
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    final String? token = prefs.getString('token');
+
+                    if (token != null) {
+                      _submitForm(token);
+                    } else {
+                      // Handle the error if token is not found
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Token not found')),
+                      );
+                    }
                   }
                 },
                 child: Text('Save'),
@@ -141,28 +190,82 @@ class _FormMotherState extends State<FormFather> {
     );
   }
 
-  void _submitForm() async {
-    final response = await http.post(
+  void _submitForm(String token) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await http.get(
       Uri.parse('http://localhost:8000/api/fathers'),
-      body: {
-        'nik': _nikController.text,
-        'name': _firstNameController.text,
-        'address': _addressController.text,
-        'city': _selectedCity,
-        'nationality': _nationalityController.text,
-        'gender': _selectedGender,
-        'religion': _religionController.text,
+      headers: {
+        'Authorization': 'Bearer $token',
       },
     );
 
     if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Data saved successfully')),
+      // If father data already exists, update it
+      final response = await http.put(
+        Uri.parse('http://localhost:8000/api/fathers'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'nik': _nikController.text,
+          'name': _nameController.text,
+          'address': _addressController.text,
+          'city': _selectedCity,
+          'nationality': _nationalityController.text,
+          'gender': _selectedGender,
+          'religion': _religionController.text,
+        }),
       );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data updated successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update data')),
+        );
+        print('Failed to update data: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } else if (response.statusCode == 404) {
+      // If father data does not exist, create it
+      final response = await http.post(
+        Uri.parse('http://localhost:8000/api/fathers'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'nik': _nikController.text,
+          'name': _nameController.text,
+          'address': _addressController.text,
+          'city': _selectedCity,
+          'nationality': _nationalityController.text,
+          'gender': _selectedGender,
+          'religion': _religionController.text,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data saved successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save data')),
+        );
+        print('Failed to save data: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
     } else {
+      // Handle other errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save data')),
+        SnackBar(content: Text('Failed to fetch data')),
       );
+      print('Failed to fetch data: ${response.statusCode}');
+      print('Response body: ${response.body}');
     }
   }
 
@@ -176,6 +279,6 @@ class _FormMotherState extends State<FormFather> {
 
 void main() {
   runApp(MaterialApp(
-    home: FormFather(),
+    home: FatherFormInputPage(),
   ));
 }

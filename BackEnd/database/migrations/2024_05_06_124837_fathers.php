@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('fathers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('nik')->unique();
             $table->string('name');
             $table->string('address');
