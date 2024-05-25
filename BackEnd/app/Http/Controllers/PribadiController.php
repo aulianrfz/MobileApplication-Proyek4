@@ -4,19 +4,26 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Personal;
+use Illuminate\Support\Facades\Auth;
 
 class PribadiController extends Controller
 {
     public function index()
     {
-        $personals = Personal::all();
-        return response()->json(['data' => $personals]);
+        $user = Auth::user();
+        $personal = $user->personal;
+        if (!$personal) {
+            return response()->json(['message' => 'Personal data not found'], 404);
+        }
+        return response()->json(['data' => $personal]);
     }
 
     public function store(Request $request)
     {
+        \Log::info('Incoming request data: ', $request->all());
+
         $validatedData = $request->validate([
-            'nik' => 'required|unique:personals',
+            'nik' => 'required|unique:personals,nik',
             'first_name' => 'required',
             'last_name' => 'required',
             'address' => 'required',
@@ -26,29 +33,34 @@ class PribadiController extends Controller
             'religion' => 'required',
         ]);
 
-        $personal = Personal::create($validatedData);
+        \Log::info('Validated data: ', $validatedData);
 
-        return response()->json(['message' => 'Personal data created successfully', 'data' => $personal]);
+        $user = Auth::user();
+        $personal = Personal::create(array_merge($validatedData, ['user_id' => $user->id]));
+
+        \Log::info('Created personal data: ', $personal->toArray());
+
+        return response()->json(['message' => 'Personal data created successfully', 'data' => $personal], 201);
     }
 
-    public function show($id)
+
+    public function show()
     {
-        $personal = Personal::find($id);
-        if (!$personal) {
-            return response()->json(['message' => 'Personal data not found'], 404);
-        }
-        return response()->json(['data' => $personal]);
+        $personalData = Personal::where('user_id', Auth::id())->get();
+
+        return response()->json($personalData);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $personal = Personal::find($id);
+        $user = Auth::user();
+        $personal = $user->personal;
         if (!$personal) {
             return response()->json(['message' => 'Personal data not found'], 404);
         }
 
         $validatedData = $request->validate([
-            'nik' => 'required|unique:personals,nik,' . $id,
+            'nik' => 'required|unique:personals,nik,' . $personal->id,
             'first_name' => 'required',
             'last_name' => 'required',
             'address' => 'required',
@@ -56,6 +68,7 @@ class PribadiController extends Controller
             'nationality' => 'required',
             'gender' => 'required',
             'religion' => 'required',
+            'birthdate' => 'required|date',
         ]);
 
         $personal->update($validatedData);
@@ -63,9 +76,10 @@ class PribadiController extends Controller
         return response()->json(['message' => 'Personal data updated successfully', 'data' => $personal]);
     }
 
-    public function destroy($id)
+    public function destroy()
     {
-        $personal = Personal::find($id);
+        $user = Auth::user();
+        $personal = $user->personal;
         if (!$personal) {
             return response()->json(['message' => 'Personal data not found'], 404);
         }

@@ -1,6 +1,9 @@
+// login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'shared_prefences.dart';
 
 class LoginScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -159,8 +162,13 @@ class LoginScreen extends StatelessWidget {
           // Login berhasil
           final responseData = json.decode(response.body);
           final token = responseData['token'];
+          final userId =
+              responseData['user_id']; // Dapatkan userId dari respons API
+
+          // Simpan token dan userId ke dalam shared preferences
+          await SharedPreferencesManager.saveUserData(token, userId);
+
           Navigator.pushReplacementNamed(context, '/homepage');
-          // ...
         } else {
           // Gagal login
           showDialog(
@@ -168,8 +176,7 @@ class LoginScreen extends StatelessWidget {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text('Login Failed'),
-                content: Text(
-                    'An error occurred during login. Please try again later.'),
+                content: Text('Gagal'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
@@ -189,8 +196,7 @@ class LoginScreen extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text(
-                  'An error occurred during login. Please try again later.'),
+              content: Text('Kesalahan lain'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -205,4 +211,10 @@ class LoginScreen extends StatelessWidget {
       }
     }
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: LoginScreen(),
+  ));
 }

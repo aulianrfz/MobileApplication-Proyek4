@@ -10,6 +10,7 @@ class Personal extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id', 
         'nik',
         'first_name',
         'last_name',

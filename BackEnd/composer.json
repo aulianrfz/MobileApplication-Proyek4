@@ -10,6 +10,7 @@
         "laravel/passport": "^12.1",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "laravel/ui": "^4.5",
         "paragonie/random_compat": "2.*"
     },
     "require-dev": {

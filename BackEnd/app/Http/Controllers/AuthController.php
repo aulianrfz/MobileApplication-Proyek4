@@ -30,25 +30,37 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        return response()->json(['message' => 'User registered successfully'], 201);
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json(['message' => 'User registered successfully', 'token' => $token], 201);
     }
 
     public function login(Request $request)
     {
-        // Ambil email dan password dari request
-        $email = $request->input('email');
-        $password = $request->input('password');
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
 
-        // Cari user berdasarkan email
-        $user = User::where('email', $email)->first();
-
-        // Jika user ditemukan dan password cocok
-        if ($user && Hash::check($password, $user->password)) {
-            // Kembalikan data user sebagai respons
-            return response()->json($user, 200);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
 
-        // Jika user tidak ditemukan atau password tidak cocok, kembalikan respons Unauthorized
-        return response()->json(['message' => 'Unauthorized'], 401);
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json(['message' => 'Login successful', 'token' => $token, 'user_id' => $user->id], 200); // Added user_id
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logged out successfully'], 200);
     }
 }

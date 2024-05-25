@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FormInputPage extends StatefulWidget {
   @override
@@ -8,14 +10,15 @@ class FormInputPage extends StatefulWidget {
 
 class _FormInputPageState extends State<FormInputPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _nikController = TextEditingController();
-  TextEditingController _firstNameController = TextEditingController();
-  TextEditingController _lastNameController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _nationalityController = TextEditingController();
-  TextEditingController _selectedCityController = TextEditingController();
-  TextEditingController _selectedGenderController = TextEditingController();
-  TextEditingController _religionController = TextEditingController();
+  final TextEditingController _nikController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _nationalityController = TextEditingController();
+  final TextEditingController _selectedCityController = TextEditingController();
+  final TextEditingController _selectedGenderController =
+      TextEditingController();
+  final TextEditingController _religionController = TextEditingController();
 
   List<String> _cities = [
     'New York',
@@ -44,6 +47,47 @@ class _FormInputPageState extends State<FormInputPage> {
   String _selectedCity = '';
   String _selectedGender = '';
   String _selectedReligion = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch data when the page loads
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('http://localhost:8000/api/personals'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body)['data'];
+        setState(() {
+          _nikController.text = responseData['nik'];
+          _firstNameController.text = responseData['first_name'];
+          _lastNameController.text = responseData['last_name'];
+          _addressController.text = responseData['address'];
+          _selectedCity = responseData['city'];
+          _nationalityController.text = responseData['nationality'];
+          _selectedGender = responseData['gender'];
+          _religionController.text = responseData['religion'];
+        });
+      } else {
+        // Handle if failed to fetch data from backend
+        print('Failed to fetch data: ${response.statusCode}');
+      }
+    } else {
+      // Handle if token not found
+      print('Token not found');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,9 +173,17 @@ class _FormInputPageState extends State<FormInputPage> {
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    _submitForm();
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    final String? token = prefs.getString('token');
+
+                    if (token != null) {
+                      _submitForm(token);
+                    } else {
+                      // Handle the error if token is not found
+                    }
                   }
                 },
                 child: Text('Save'),
@@ -143,11 +195,14 @@ class _FormInputPageState extends State<FormInputPage> {
     );
   }
 
-  void _submitForm() async {
+  void _submitForm(String token) async {
     final response = await http.post(
-      Uri.parse(
-          'http://localhost:8000/api/personals'), // Adjust with the correct endpoint
-      body: {
+      Uri.parse('http://localhost:8000/api/personals'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
         'nik': _nikController.text,
         'first_name': _firstNameController.text,
         'last_name': _lastNameController.text,
@@ -156,10 +211,10 @@ class _FormInputPageState extends State<FormInputPage> {
         'nationality': _nationalityController.text,
         'gender': _selectedGender,
         'religion': _religionController.text,
-      },
+      }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Data saved successfully')),
       );
@@ -167,6 +222,8 @@ class _FormInputPageState extends State<FormInputPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save data')),
       );
+      print('Failed to save data: ${response.statusCode}');
+      print('Response body: ${response.body}');
     }
   }
 
