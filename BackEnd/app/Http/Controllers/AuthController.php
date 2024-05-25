@@ -63,4 +63,33 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Logged out successfully'], 200);
     }
+
+    // In AuthController.php
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'required|string|max:15',
+        ]);
+
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+        $user->phone = $validatedData['phone'];
+        $user->save();
+
+        return response()->json(['message' => 'Profile updated successfully', 'data' => $user]);
+    }
+
+
+    // In AuthController.php
+    public function getProfile()
+    {
+        $user = Auth::user();
+        return response()->json(['data' => $user]);
+    }
+
+
 }

@@ -183,6 +183,9 @@ class _FormInputPageState extends State<FormInputPage> {
                       _submitForm(token);
                     } else {
                       // Handle the error if token is not found
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Token not found')),
+                      );
                     }
                   }
                 },
@@ -196,33 +199,82 @@ class _FormInputPageState extends State<FormInputPage> {
   }
 
   void _submitForm(String token) async {
-    final response = await http.post(
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await http.get(
       Uri.parse('http://localhost:8000/api/personals'),
       headers: {
         'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
       },
-      body: json.encode({
-        'nik': _nikController.text,
-        'first_name': _firstNameController.text,
-        'last_name': _lastNameController.text,
-        'address': _addressController.text,
-        'city': _selectedCity,
-        'nationality': _nationalityController.text,
-        'gender': _selectedGender,
-        'religion': _religionController.text,
-      }),
     );
 
-    if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Data saved successfully')),
+    if (response.statusCode == 200) {
+      // If personal data already exists, update it
+      final response = await http.put(
+        Uri.parse('http://localhost:8000/api/personals'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'nik': _nikController.text,
+          'first_name': _firstNameController.text,
+          'last_name': _lastNameController.text,
+          'address': _addressController.text,
+          'city': _selectedCity,
+          'nationality': _nationalityController.text,
+          'gender': _selectedGender,
+          'religion': _religionController.text,
+        }),
       );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data updated successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update data')),
+        );
+        print('Failed to update data: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } else if (response.statusCode == 404) {
+      // If personal data does not exist, create it
+      final response = await http.post(
+        Uri.parse('http://localhost:8000/api/personals'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'nik': _nikController.text,
+          'first_name': _firstNameController.text,
+          'last_name': _lastNameController.text,
+          'address': _addressController.text,
+          'city': _selectedCity,
+          'nationality': _nationalityController.text,
+          'gender': _selectedGender,
+          'religion': _religionController.text,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data saved successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save data')),
+        );
+        print('Failed to save data: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
     } else {
+      // Handle other errors
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save data')),
+        SnackBar(content: Text('Failed to fetch data')),
       );
-      print('Failed to save data: ${response.statusCode}');
+      print('Failed to fetch data: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
   }

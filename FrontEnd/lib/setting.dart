@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -13,6 +16,39 @@ class _SettingPageState extends State<SettingPage> {
   TextEditingController _newPasswordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    fetchProfileData();
+  }
+
+  Future<void> fetchProfileData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('http://localhost:8000/api/user'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body)['data'];
+        setState(() {
+          _nameController.text = responseData['name'];
+          _emailController.text = responseData['email'];
+          _phoneController.text = responseData['phone'];
+        });
+      } else {
+        print('Failed to fetch profile data: ${response.statusCode}');
+      }
+    } else {
+      print('Token not found');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -20,117 +56,94 @@ class _SettingPageState extends State<SettingPage> {
       ),
       body: Padding(
         padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(
-              'Update Profile',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(
+                'Update Profile',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Name',
-                hintText: 'Enter your name',
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  hintText: 'Enter your name',
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                hintText: 'Enter your email',
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'Enter your email',
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                labelText: 'Phone',
-                hintText: 'Enter your phone number',
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: 'Phone',
+                  hintText: 'Enter your phone number',
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Change Password',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _updateProfile,
+                child: Text('Save Changes'),
               ),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _currentPasswordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Current Password',
-                hintText: 'Enter your current password',
-              ),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _newPasswordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'New Password',
-                hintText: 'Enter your new password',
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Add logic to update profile information including password change
-                _updateProfile();
-              },
-              child: Text('Save Changes'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  void _updateProfile() {
-    String newName = _nameController.text;
-    String newEmail = _emailController.text;
-    String newPhone = _phoneController.text;
-    String currentPassword = _currentPasswordController.text;
-    String newPassword = _newPasswordController.text;
+  void _updateProfile() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
 
-    // Validate inputs
-    if (currentPassword.isEmpty || newPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter current and new passwords')),
+    if (token != null) {
+      final response = await http.put(
+        Uri.parse('http://localhost:8000/api/profile'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'name': _nameController.text,
+          'email': _emailController.text,
+          'phone': _phoneController.text,
+        }),
       );
-      return;
-    }
 
-    // Perform password change logic (example validation)
-    if (newPassword.length < 8) {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile updated successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile')),
+        );
+        print('Failed to update profile: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('New password must be at least 8 characters')),
+        SnackBar(content: Text('Token not found')),
       );
-      return;
     }
-
-    // Implement your logic to update profile information and change password
-    // Example: Make API calls to update user profile and change password
-    // For demonstration, show a snackbar indicating profile update
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Profile updated successfully')),
-    );
-
-    // Clear text fields after updating profile
-    _nameController.clear();
-    _emailController.clear();
-    _phoneController.clear();
-    _currentPasswordController.clear();
-    _newPasswordController.clear();
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: SettingPage(),
+  ));
 }

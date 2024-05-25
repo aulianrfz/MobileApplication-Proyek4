@@ -16,8 +16,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Personal data routes
     Route::post('personals', [PribadiController::class, 'store']);
     Route::get('/personals', [PribadiController::class, 'index']);
-    Route::get('/personals/{id}', [PribadiController::class, 'show']);
-    Route::put('/personals/{id}', [PribadiController::class, 'update']);
+    Route::put('personals', [PribadiController::class, 'update']);
+    Route::get('user', [AuthController::class, 'getProfile']); 
+    Route::put('profile', [AuthController::class, 'updateProfile']);
+    // Route::get('/personals/{id}', [PribadiController::class, 'show']);
+    // Route::put('/personals/{id}', [PribadiController::class, 'update']);
     Route::delete('/personals/{id}', [PribadiController::class, 'destroy']);
 
     // Mother data routes

@@ -55,6 +55,7 @@ class PribadiController extends Controller
     {
         $user = Auth::user();
         $personal = $user->personal;
+
         if (!$personal) {
             return response()->json(['message' => 'Personal data not found'], 404);
         }
@@ -68,12 +69,11 @@ class PribadiController extends Controller
             'nationality' => 'required',
             'gender' => 'required',
             'religion' => 'required',
-            'birthdate' => 'required|date',
         ]);
 
         $personal->update($validatedData);
 
-        return response()->json(['message' => 'Personal data updated successfully', 'data' => $personal]);
+        return response()->json(['message' => 'Personal data updated successfully', 'data' => $personal], 200);
     }
 
     public function destroy()
