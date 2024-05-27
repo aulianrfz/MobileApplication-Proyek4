@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class EducationPage extends StatefulWidget {
+class EducationFormInputPage extends StatefulWidget {
   @override
-  _EducationPageState createState() => _EducationPageState();
+  _EducationFormInputPageState createState() => _EducationFormInputPageState();
 }
 
-class _EducationPageState extends State<EducationPage> {
+class _EducationFormInputPageState extends State<EducationFormInputPage> {
   final _formKey = GlobalKey<FormState>();
   List<Map<String, TextEditingController>> _educations = [];
 
@@ -17,6 +20,12 @@ class _EducationPageState extends State<EducationPage> {
     'Phoenix',
     // Tambahkan kota lain sesuai kebutuhan
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _addEducation(); // Add initial education entry
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +81,7 @@ class _EducationPageState extends State<EducationPage> {
     );
   }
 
-  Widget _buildDataContainer(
-      String labelText, TextEditingController controller) {
+  Widget _buildDataContainer(String labelText, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -116,25 +124,66 @@ class _EducationPageState extends State<EducationPage> {
         'endYear': TextEditingController(),
         'major': TextEditingController(),
         'address': TextEditingController(),
-        'city': TextEditingController(
-            text: _cities.isNotEmpty ? _cities.first : null),
+        'city': TextEditingController(text: _cities.isNotEmpty ? _cities.first : null),
       });
     });
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Process data
-      // For example, save the data to a database
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Processing Data')),
-      );
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? token = prefs.getString('token');
+
+      if (token != null) {
+        final List<Map<String, dynamic>> educationData = _educations
+            .map((education) => {
+          'school': education['school']!.text,
+          'start_year': education['startYear']!.text,
+          'end_year': education['endYear']!.text,
+          'major': education['major']!.text,
+          'address': education['address']!.text,
+          'city': education['city']!.text,
+        })
+            .toList();
+
+        try {
+          final response = await http.post(
+            Uri.parse('http://localhost:8000/api/educations'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({'educations': educationData}),
+          );
+
+          if (response.statusCode == 201) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Education data saved successfully')),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to save education data')),
+            );
+            print('Failed to save education data: ${response.statusCode}');
+            print('Response body: ${response.body}');
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error occurred while saving education data')),
+          );
+          print('Error occurred while saving education data: $e');
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Token not found')),
+        );
+      }
     }
   }
 }
 
 void main() {
   runApp(MaterialApp(
-    home: EducationPage(),
+    home: EducationFormInputPage(),
   ));
 }

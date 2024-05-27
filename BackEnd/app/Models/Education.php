@@ -1,22 +1,24 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Mother extends Model
+class Education extends Model
 {
     use HasFactory;
+    protected $table = 'educations';
+
 
     protected $fillable = [
-        'user_id', 
-        'nik',
-        'name',
+        'user_id',
+        'school',
+        'start_year',
+        'end_year',
+        'major',
         'address',
         'city',
-        'nationality',
-        'gender',
-        'religion',
     ];
 
     public function user()

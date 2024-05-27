@@ -1,22 +1,23 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Mother extends Model
+class Work extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 
-        'nik',
-        'name',
+        'user_id',
+        'npwp',
+        'company',
+        'start_year',
+        'end_year',
+        'position',
         'address',
         'city',
-        'nationality',
-        'gender',
-        'religion',
     ];
 
     public function user()

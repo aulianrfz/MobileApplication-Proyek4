@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -20,6 +19,8 @@ class MotherController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('Incoming request data: ', $request->all());
+
         $validatedData = $request->validate([
             'nik' => 'required|unique:mothers,nik',
             'name' => 'required',
@@ -30,8 +31,12 @@ class MotherController extends Controller
             'religion' => 'required',
         ]);
 
+        \Log::info('Validated data: ', $validatedData);
+
         $user = Auth::user();
         $mother = Mother::create(array_merge($validatedData, ['user_id' => $user->id]));
+
+        \Log::info('Created mother data: ', $mother->toArray());
 
         return response()->json(['message' => 'Mother data created successfully', 'data' => $mother], 201);
     }
@@ -55,12 +60,12 @@ class MotherController extends Controller
             'religion' => 'required',
         ]);
 
+        \Log::info('Validated data for update: ', $validatedData);
+
         $mother->update($validatedData);
+
+        \Log::info('Updated mother data: ', $mother->toArray());
 
         return response()->json(['message' => 'Mother data updated successfully', 'data' => $mother], 200);
     }
-
-
-
-    // Other methods like show, update, and destroy can be implemented similarly
 }

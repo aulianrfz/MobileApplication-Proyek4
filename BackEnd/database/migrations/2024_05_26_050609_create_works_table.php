@@ -4,27 +4,28 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateWorksTable extends Migration
 {
     public function up()
     {
-        Schema::create('mothers', function (Blueprint $table) {
+        Schema::create('works', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('nik')->unique();
-            $table->string('name');
+            $table->string('npwp')->unique();
+            $table->string('company');
+            $table->integer('start_year');
+            $table->integer('end_year');
+            $table->string('position');
             $table->string('address');
             $table->string('city');
-            $table->string('nationality');
-            $table->string('gender');
-            $table->string('religion');
             $table->timestamps();
-            
+
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('mothers');
+        Schema::dropIfExists('works');
     }
-};
+}
+

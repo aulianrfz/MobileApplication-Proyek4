@@ -43,4 +43,14 @@ class User extends Model
     {
         return $this->hasOne(Father::class);
     }
+
+    public function work()
+    {
+        return $this->hasOne(Work::class);
+    }
+
+    public function education()
+    {
+        return $this->hasOne(Work::class);
+    }
 }
