@@ -11,7 +11,6 @@ import 'package:singpass/ortu.dart';
 import 'package:singpass/mother.dart';
 import 'package:singpass/father.dart';
 
-
 void main() {
   runApp(MyApp());
 }

@@ -81,7 +81,8 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
     );
   }
 
-  Widget _buildDataContainer(String labelText, TextEditingController controller) {
+  Widget _buildDataContainer(
+      String labelText, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -124,7 +125,8 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
         'endYear': TextEditingController(),
         'major': TextEditingController(),
         'address': TextEditingController(),
-        'city': TextEditingController(text: _cities.isNotEmpty ? _cities.first : null),
+        'city': TextEditingController(
+            text: _cities.isNotEmpty ? _cities.first : null),
       });
     });
   }
@@ -137,13 +139,13 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
       if (token != null) {
         final List<Map<String, dynamic>> educationData = _educations
             .map((education) => {
-          'school': education['school']!.text,
-          'start_year': education['startYear']!.text,
-          'end_year': education['endYear']!.text,
-          'major': education['major']!.text,
-          'address': education['address']!.text,
-          'city': education['city']!.text,
-        })
+                  'school': education['school']!.text,
+                  'start_year': education['startYear']!.text,
+                  'end_year': education['endYear']!.text,
+                  'major': education['major']!.text,
+                  'address': education['address']!.text,
+                  'city': education['city']!.text,
+                })
             .toList();
 
         try {
@@ -169,7 +171,8 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
           }
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error occurred while saving education data')),
+            SnackBar(
+                content: Text('Error occurred while saving education data')),
           );
           print('Error occurred while saving education data: $e');
         }

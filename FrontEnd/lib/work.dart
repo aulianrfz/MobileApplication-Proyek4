@@ -80,7 +80,6 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,8 +111,7 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
                     child: TextFormField(
                       controller: _startYearController,
                       decoration: InputDecoration(labelText: 'Start Year'),
-                      validator: (value) =>
-                          _validateInput(value, 'Start Year'),
+                      validator: (value) => _validateInput(value, 'Start Year'),
                     ),
                   ),
                   SizedBox(width: 16.0),
@@ -121,8 +119,7 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
                     child: TextFormField(
                       controller: _endYearController,
                       decoration: InputDecoration(labelText: 'End Year'),
-                      validator: (value) =>
-                          _validateInput(value, 'End Year'),
+                      validator: (value) => _validateInput(value, 'End Year'),
                     ),
                   ),
                 ],
@@ -161,7 +158,7 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
+                        await SharedPreferences.getInstance();
                     final String? token = prefs.getString('token');
 
                     if (token != null) {
