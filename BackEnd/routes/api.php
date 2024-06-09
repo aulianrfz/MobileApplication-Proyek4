@@ -12,6 +12,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\IntegrationHistoryController;
 use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NotificationController;
 
 
 // Auth routes
@@ -67,3 +68,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/integration-history', [IntegrationHistoryController::class, 'store']);
 Route::get('/integration-history', [IntegrationHistoryController::class, 'index']);
+
+Route::post('/integration-history', [IntegrationHistoryController::class, 'store']);
+Route::get('/integration-history', [IntegrationHistoryController::class, 'index']);
+Route::get('/notifications', [NotificationController::class, 'index']);
+Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);

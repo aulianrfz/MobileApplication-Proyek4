@@ -13,7 +13,10 @@ class CreateHistoriesTable extends Migration
             $table->string('app_name');
             $table->timestamp('generated_at');
             $table->string('status');
+            $table->unsignedBigInteger('user_id'); // Tambahkan user_id
             $table->timestamps();
+            
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

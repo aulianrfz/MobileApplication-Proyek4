@@ -11,6 +11,7 @@ import 'package:singpass/ortu.dart';
 import 'package:singpass/mother.dart';
 import 'package:singpass/father.dart';
 import 'package:singpass/barcode.dart';
+import 'package:singpass/notification.dart';
 //import 'package:singpass/user_card.dart';
 
 void main() {
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         '/mother': (context) => MotherFormInputPage(),
         '/father': (context) => FatherFormInputPage(),
         '/barcode': (context) => BarcodePage(),
+        '/notifications': (context) => NotificationsPage(),
         //'/card': (context) => UserCardPage(),
       },
     );

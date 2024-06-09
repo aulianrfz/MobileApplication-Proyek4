@@ -19,10 +19,10 @@ class FormOrtu extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                backgroundColor: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
-                primary: Colors.blue,
                 elevation: 3,
               ),
               child: Row(
@@ -50,10 +50,10 @@ class FormOrtu extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                backgroundColor: Colors.green,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
-                primary: Colors.green,
                 elevation: 3,
               ),
               child: Row(

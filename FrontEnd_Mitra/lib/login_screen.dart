@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'shared_prefences.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -185,60 +184,12 @@ class LoginScreen extends StatelessWidget {
           Navigator.pushReplacementNamed(context, '/');
         } else {
           // Gagal login
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Login Failed'),
-                content: Text('Gagal'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
+          _showErrorDialog(context, 'Login Failed', 'Gagal');
         }
       } catch (error) {
         // Tangani kesalahan jaringan atau kesalahan lainnya
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text('Kesalahan lain'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
+        _showErrorDialog(context, 'Error', 'Kesalahan lain');
       }
-    }
-  }
-
-  Future<void> _sendIntegrationHistory() async {
-    final response = await http.post(
-      Uri.parse('http://localhost:8000/api/integration-history'),
-      body: {
-        'app_name': 'QuickFy',
-        'generated_at': DateTime.now().toIso8601String(),
-        'status': 'Login successful',
-      },
-    );
-
-    if (response.statusCode != 200) {
-      // Tangani kesalahan jika perlu
-      print('Failed to send integration history');
     }
   }
 

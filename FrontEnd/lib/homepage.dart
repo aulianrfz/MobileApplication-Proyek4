@@ -16,8 +16,6 @@ class _HomepageState extends State<Homepage> {
   late TextEditingController _nikController;
   late TextEditingController _positionController;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -55,7 +53,6 @@ class _HomepageState extends State<Homepage> {
           _firstNameController.text = responseData['first_name'];
           _lastNameController.text = responseData['last_name'];
           _nikController.text = responseData['nik'];
-
         });
       } else {
         // Handle if failed to fetch data from backend
@@ -103,9 +100,15 @@ class _HomepageState extends State<Homepage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(
-                    Icons.notifications,
-                    size: 35,
+                  IconButton(
+                    icon: Icon(
+                      Icons.notifications,
+                      size: 35,
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context,
+                          '/notifications'); // Navigasi ke halaman NotificationsPage
+                    },
                   ),
                   Icon(
                     Icons.settings,
@@ -159,10 +162,11 @@ class _HomepageState extends State<Homepage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            _nikController.text,                            style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                            _nikController.text,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           Text(
