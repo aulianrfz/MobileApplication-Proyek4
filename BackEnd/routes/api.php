@@ -8,6 +8,8 @@ use App\Http\Controllers\MotherController;
 use App\Http\Controllers\FatherController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\EducationController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\IntegrationHistoryController;
 
 
 // Auth routes
@@ -48,3 +50,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Logout route
     Route::post('logout', [AuthController::class, 'logout']);
 });
+
+Route::post('/integration-history', [IntegrationHistoryController::class, 'store']);
+Route::get('/integration-history', [IntegrationHistoryController::class, 'index']);

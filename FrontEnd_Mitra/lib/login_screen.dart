@@ -1,4 +1,3 @@
-// login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -162,54 +161,60 @@ class LoginScreen extends StatelessWidget {
           // Login berhasil
           final responseData = json.decode(response.body);
           final token = responseData['token'];
-          final userId =
-              responseData['user_id']; // Dapatkan userId dari respons API
+          final userId = responseData['user_id'];
 
           // Simpan token dan userId ke dalam shared preferences
           await SharedPreferencesManager.saveUserData(token, userId);
 
+          // Kirim riwayat integrasi
+          await _sendIntegrationHistory();
+
           Navigator.pushReplacementNamed(context, '/');
         } else {
           // Gagal login
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Login Failed'),
-                content: Text('Gagal'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
+          _showErrorDialog(context, 'Login Failed', 'Gagal');
         }
       } catch (error) {
         // Tangani kesalahan jaringan atau kesalahan lainnya
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text('Kesalahan lain'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
+        _showErrorDialog(context, 'Error', 'Kesalahan lain');
       }
     }
+  }
+
+  Future<void> _sendIntegrationHistory() async {
+    final response = await http.post(
+      Uri.parse('http://localhost:8000/api/integration-history'),
+      body: {
+        'app_name': 'QuickFy',
+        'generated_at': DateTime.now().toIso8601String(),
+        'status': 'Login successful',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      // Tangani kesalahan jika perlu
+      print('Failed to send integration history');
+    }
+  }
+
+  void _showErrorDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 

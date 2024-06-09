@@ -4,6 +4,7 @@ import 'package:app_mitra/register_screen.dart';
 import 'package:app_mitra/homepage.dart';
 import 'package:app_mitra/setting.dart';
 import 'package:app_mitra/personal.dart';
+import 'package:app_mitra/father.dart';
 import 'package:app_mitra/shared_prefences.dart'; // Import SharedPreferencesManager
 
 void main() async {

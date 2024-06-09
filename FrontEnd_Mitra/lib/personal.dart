@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'user_data.dart';
+import 'father.dart';
+import 'api_service.dart';
 
 class FormInputPage extends StatefulWidget {
   @override
@@ -16,74 +19,64 @@ class _FormInputPageState extends State<FormInputPage> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _nationalityController = TextEditingController();
   final TextEditingController _religionController = TextEditingController();
+  final TextEditingController _facebookController = TextEditingController();
+  final TextEditingController _twitterController = TextEditingController();
+  final TextEditingController _instagramController = TextEditingController();
 
   List<String> _cities = [
     'New York',
     'Los Angeles',
     'Chicago',
     'Houston',
-    'Phoenix',
-    // Add other cities as needed
+    'Phoenix'
   ];
-
-  List<String> _genders = [
-    'Male',
-    'Female',
-    'Other',
-  ];
-
-  List<String> _religions = [
-    'Christianity',
-    'Islam',
-    'Hinduism',
-    'Buddhism',
-    'Judaism',
-    // Add other religions as needed
-  ];
+  List<String> _genders = ['Male', 'Female', 'Other'];
 
   String _selectedCity = '';
   String _selectedGender = '';
-  String _selectedReligion = '';
+
+  Map<String, String> _fatherData = {
+    'nik': '',
+    'name': '',
+    'address': '',
+    'city': '',
+    'nationality': '',
+    'gender': '',
+    'religion': '',
+  };
+
+  UserData? _userData;
 
   @override
   void initState() {
     super.initState();
-    // Fetch data when the page loads
     fetchData();
   }
 
   Future<void> fetchData() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('token');
+    final userData = await ApiService.fetchUserData();
 
-    if (token != null) {
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/api/personals'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body)['data'];
-        setState(() {
-          _nikController.text = responseData['nik'];
-          _firstNameController.text = responseData['first_name'];
-          _lastNameController.text = responseData['last_name'];
-          _addressController.text = responseData['address'];
-          _selectedCity = responseData['city'];
-          _nationalityController.text = responseData['nationality'];
-          _selectedGender = responseData['gender'];
-          _religionController.text = responseData['religion'];
-        });
-      } else {
-        // Handle if failed to fetch data from backend
-        print('Failed to fetch data: ${response.statusCode}');
-      }
+    if (userData != null) {
+      setState(() {
+        _userData = userData;
+        _nikController.text = userData.nik;
+        _firstNameController.text = userData.firstName;
+        _lastNameController.text = userData.lastName;
+        _addressController.text = userData.address;
+        _selectedCity = userData.city;
+        _nationalityController.text = userData.nationality;
+        _selectedGender = userData.gender;
+        _religionController.text = userData.religion;
+      });
     } else {
-      // Handle if token not found
-      print('Token not found');
+      print('Failed to fetch user data');
     }
+  }
+
+  void _saveFatherData(Map<String, String> data) {
+    setState(() {
+      _fatherData = data;
+    });
   }
 
   @override
@@ -91,7 +84,7 @@ class _FormInputPageState extends State<FormInputPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Personal Information'),
-        automaticallyImplyLeading: false, // Hide back button
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -170,6 +163,31 @@ class _FormInputPageState extends State<FormInputPage> {
                 validator: (value) => _validateInput(value, 'Religion'),
               ),
               SizedBox(height: 16.0),
+              TextFormField(
+                controller: _facebookController,
+                decoration: InputDecoration(labelText: 'Facebook'),
+                // You can add validation or customize as needed
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _twitterController,
+                decoration: InputDecoration(labelText: 'Twitter'),
+                // You can add validation or customize as needed
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _instagramController,
+                decoration: InputDecoration(labelText: 'Instagram'),
+                // You can add validation or customize as needed
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  _navigateToFatherFormPage(context);
+                },
+                child: Text('Enter Father\'s Information'),
+              ),
+              SizedBox(height: 16.0),
               GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context, '/login');
@@ -198,43 +216,70 @@ class _FormInputPageState extends State<FormInputPage> {
     );
   }
 
-  void _submitForm() async {
-    final response = await http.post(
-      Uri.parse('http://localhost:8081/api/personals'),
-      body: {
-        'nik': _nikController.text.trim(),
-        'first_name': _firstNameController.text.trim(),
-        'last_name': _lastNameController.text.trim(),
-        'address': _addressController.text.trim(),
-        'city': _selectedCity.trim(),
-        'nationality': _nationalityController.text.trim(),
-        'gender': _selectedGender.trim(),
-        'religion': _religionController.text.trim(),
-      },
+  void _navigateToFatherFormPage(BuildContext context) async {
+    final Map<String, String>? result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FatherFormPage(
+          onSubmitFatherForm: _saveFatherData,
+        ),
+      ),
     );
 
-    if (response.statusCode == 201) {
-      // Registration successful, navigate to login screen
-      Navigator.pushReplacementNamed(context, '/homepage');
-    } else {
-      // Registration failed, display error message
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Registration Failed'),
-            content: Text('An error occurred during registration.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
+    if (result != null) {
+      setState(() {
+        _fatherData = result;
+      });
+    }
+  }
+
+  void _submitForm() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null) {
+      final response = await http.post(
+        Uri.parse('http://localhost:8081/api/personals'),
+        headers: {'Authorization': 'Bearer $token'},
+        body: json.encode({
+          'nik': _nikController.text.trim(),
+          'first_name': _firstNameController.text.trim(),
+          'last_name': _lastNameController.text.trim(),
+          'address': _addressController.text.trim(),
+          'city': _selectedCity.trim(),
+          'nationality': _nationalityController.text.trim(),
+          'gender': _selectedGender.trim(),
+          'religion': _religionController.text.trim(),
+          'facebook': _facebookController.text.trim(),
+          'twitter': _twitterController.text.trim(),
+          'instagram': _instagramController.text.trim(),
+          'father': _fatherData,
+        }),
       );
+
+      if (response.statusCode == 201) {
+        Navigator.pushReplacementNamed(context, '/homepage');
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Registration Failed'),
+              content: Text('An error occurred during registration.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      print('Token not found');
     }
   }
 
