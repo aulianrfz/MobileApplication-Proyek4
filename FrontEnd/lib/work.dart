@@ -28,6 +28,7 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
   ];
 
   String _selectedCity = '';
+  int? _workId;
 
   @override
   void initState() {
@@ -49,27 +50,16 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body)['data'];
-        if (responseData is List && responseData.isNotEmpty) {
-          final workData = responseData.first;
+        if (responseData != null) {
           setState(() {
-            _npwpController.text = workData['npwp'];
-            _companyController.text = workData['company'];
-            _startYearController.text = workData['start_year'].toString();
-            _endYearController.text = workData['end_year'].toString();
-            _positionController.text = workData['position'];
-            _addressController.text = workData['address'];
-            _selectedCity = workData['city'];
-          });
-        } else {
-          // If no data is found, initialize with empty values
-          setState(() {
-            _npwpController.text = '';
-            _companyController.text = '';
-            _startYearController.text = '';
-            _endYearController.text = '';
-            _positionController.text = '';
-            _addressController.text = '';
-            _selectedCity = '';
+            _workId = responseData['id'];
+            _npwpController.text = responseData['npwp'];
+            _companyController.text = responseData['company'];
+            _startYearController.text = responseData['start_year'].toString();
+            _endYearController.text = responseData['end_year'].toString();
+            _positionController.text = responseData['position'];
+            _addressController.text = responseData['address'];
+            _selectedCity = responseData['city'];
           });
         }
       } else {
@@ -87,95 +77,145 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
         title: Text('Work Information'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              TextFormField(
+              _buildTextFormField(
                 controller: _npwpController,
-                decoration: InputDecoration(labelText: 'NPWP'),
+                label: 'NPWP',
                 validator: (value) => _validateInput(value, 'NPWP'),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
+              _buildTextFormField(
                 controller: _companyController,
-                decoration: InputDecoration(labelText: 'Company'),
+                label: 'Company',
                 validator: (value) => _validateInput(value, 'Company'),
               ),
               SizedBox(height: 16.0),
               Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
+                    child: _buildTextFormField(
                       controller: _startYearController,
-                      decoration: InputDecoration(labelText: 'Start Year'),
+                      label: 'Start Year',
                       validator: (value) => _validateInput(value, 'Start Year'),
                     ),
                   ),
                   SizedBox(width: 16.0),
                   Expanded(
-                    child: TextFormField(
+                    child: _buildTextFormField(
                       controller: _endYearController,
-                      decoration: InputDecoration(labelText: 'End Year'),
+                      label: 'End Year',
                       validator: (value) => _validateInput(value, 'End Year'),
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 16.0),
-              TextFormField(
+              _buildTextFormField(
                 controller: _positionController,
-                decoration: InputDecoration(labelText: 'Position'),
+                label: 'Position',
                 validator: (value) => _validateInput(value, 'Position'),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
+              _buildTextFormField(
                 controller: _addressController,
-                decoration: InputDecoration(labelText: 'Address'),
+                label: 'Address',
                 validator: (value) => _validateInput(value, 'Address'),
               ),
               SizedBox(height: 16.0),
-              DropdownButtonFormField(
-                value: _selectedCity.isNotEmpty ? _selectedCity : null,
-                items: _cities.map((String city) {
-                  return DropdownMenuItem<String>(
-                    value: city,
-                    child: Text(city),
-                  );
-                }).toList(),
+              _buildDropdownButtonFormField(
+                value: _selectedCity,
+                items: _cities,
+                label: 'City',
                 onChanged: (String? value) {
                   setState(() {
                     _selectedCity = value ?? '';
                   });
                 },
-                decoration: InputDecoration(labelText: 'City'),
                 validator: (value) => _validateInput(value, 'City'),
               ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    final String? token = prefs.getString('token');
+              SizedBox(height: 24.0),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                      final String? token = prefs.getString('token');
 
-                    if (token != null) {
-                      _submitForm(token);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Token not found')),
-                      );
+                      if (token != null) {
+                        _submitForm(token);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Token not found')),
+                        );
+                      }
                     }
-                  }
-                },
-                child: Text('Save'),
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                    child: Text('Save', style: TextStyle(fontSize: 16.0)),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String label,
+    required String? Function(String?) validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      ),
+      validator: validator,
+    );
+  }
+
+  Widget _buildDropdownButtonFormField({
+    required String value,
+    required List<String> items,
+    required String label,
+    required ValueChanged<String?> onChanged,
+    required String? Function(String?) validator,
+  }) {
+    return DropdownButtonFormField(
+      value: value.isNotEmpty ? value : null,
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      ),
+      validator: validator,
     );
   }
 
@@ -190,9 +230,9 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body)['data'];
-      if (responseData is List && responseData.isNotEmpty) {
+      if (responseData != null) {
         final response = await http.put(
-          Uri.parse('http://localhost:8000/api/works'),
+          Uri.parse('http://localhost:8000/api/works/${_workId}'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -269,5 +309,14 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
 void main() {
   runApp(MaterialApp(
     home: WorkFormInputPage(),
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      ),
+    ),
   ));
 }

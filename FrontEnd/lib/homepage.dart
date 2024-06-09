@@ -1,7 +1,95 @@
 import 'package:flutter/material.dart';
-import 'package:singpass/personal.dart';
+import 'package:singpass/work.dart';
+import 'package:singpass/personal.dart'; // Pastikan import yang diperlukan sudah tersedia.
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Homepage extends StatelessWidget {
+class Homepage extends StatefulWidget {
+  @override
+  _HomepageState createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
+  late TextEditingController _nikController;
+  late TextEditingController _positionController;
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    _firstNameController = TextEditingController();
+    _lastNameController = TextEditingController();
+    _nikController = TextEditingController();
+    _positionController = TextEditingController();
+    fetchData();
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _nikController.dispose();
+    _positionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('http://localhost:8000/api/personals'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body)['data'];
+        setState(() {
+          _firstNameController.text = responseData['first_name'];
+          _lastNameController.text = responseData['last_name'];
+          _nikController.text = responseData['nik'];
+
+        });
+      } else {
+        // Handle if failed to fetch data from backend
+        print('Failed to fetch data: ${response.statusCode}');
+      }
+    } else {
+      // Handle if token not found
+      print('Token not found');
+    }
+
+    //work
+    if (token != null) {
+      final response = await http.get(
+        Uri.parse('http://localhost:8000/api/works'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body)['data'];
+        setState(() {
+          _positionController.text = responseData['position'];
+        });
+      } else {
+        // Handle if failed to fetch data from backend
+        print('Failed to fetch data: ${response.statusCode}');
+      }
+    } else {
+      // Handle if token not found
+      print('Token not found');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,7 +119,7 @@ class Homepage extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Text(
-                    'Welcome back, Jimmy!',
+                    'Welcome back, ${_firstNameController.text}!',
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
@@ -41,47 +129,59 @@ class Homepage extends StatelessWidget {
               ),
               SizedBox(height: 30),
               // Container for personal information
-              Container(
-                width: double.infinity,
-                height: 165,
-                margin: EdgeInsets.symmetric(vertical: 20),
-                decoration: BoxDecoration(
-                  color: Colors.lightBlueAccent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    // Background circles
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/barcode');
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 165,
+                  margin: EdgeInsets.symmetric(vertical: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.lightBlueAccent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      // Background circles
 
-                    // Profile image
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundImage: AssetImage('assets/profile.png'),
-                    ),
-                    SizedBox(width: 20), // Spacer
+                      // Profile image
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundImage: AssetImage('assets/profile.png'),
+                      ),
+                      SizedBox(width: 20), // Spacer
 
-                    // Name and Role text
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Jimmy Anderson',
-                          style: TextStyle(
+                      // Name and Role text
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _nikController.text,                            style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
-                        Text(
-                          'Graphic Designer',
-                          style: TextStyle(
-                            fontSize: 14,
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          Text(
+                            '${_firstNameController.text} ${_lastNameController.text}',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            _positionController.text,
+                            style: TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
@@ -133,24 +233,6 @@ class Homepage extends StatelessWidget {
                     color: const Color(0xFFFB7575),
                     onTap: () {
                       Navigator.pushNamed(context, '/ortu');
-                    },
-                  ),
-
-                  // Health button
-                  ColorChangeButton(
-                    text: 'Health',
-                    color: const Color(0xFF44EBEB),
-                    onTap: () {
-                      // Add your on-tap logic here
-                    },
-                  ),
-
-                  // Passport button
-                  ColorChangeButton(
-                    text: 'Passport',
-                    color: const Color(0xFFFFAE4F),
-                    onTap: () {
-                      // Add your on-tap logic here
                     },
                   ),
                 ],

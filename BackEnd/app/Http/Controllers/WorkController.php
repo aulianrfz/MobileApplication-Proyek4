@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Work;
@@ -39,10 +38,10 @@ class WorkController extends Controller
     public function update(Request $request, $id)
     {
         $user = Auth::user();
-        $work = $user->works()->find($id);
+        $work = Work::find($id);
 
-        if (!$work) {
-            return response()->json(['message' => 'Work data not found'], 404);
+        if (!$work || $work->user_id !== $user->id) {
+            return response()->json(['message' => 'Work data not found or unauthorized'], 404);
         }
 
         $validatedData = $request->validate([
@@ -55,13 +54,8 @@ class WorkController extends Controller
             'city' => 'required',
         ]);
 
-        \Log::info('Validated data for update: ', $validatedData);
-
         $work->update($validatedData);
-
-        \Log::info('Updated mother data: ', $work->toArray());
 
         return response()->json(['message' => 'Work data updated successfully', 'data' => $work], 200);
     }
-    // Implement other methods like update, show, and destroy as needed
 }

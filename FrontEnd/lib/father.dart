@@ -16,7 +16,7 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
   final TextEditingController _selectedCityController = TextEditingController();
   final TextEditingController _nationalityController = TextEditingController();
   final TextEditingController _selectedGenderController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _religionController = TextEditingController();
 
   List<String> _cities = [
@@ -100,75 +100,145 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              TextFormField(
-                controller: _nikController,
-                decoration: InputDecoration(labelText: 'NIK'),
-                validator: (value) => _validateInput(value, 'NIK'),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: TextFormField(
+                  controller: _nikController,
+                  decoration: InputDecoration(
+                    labelText: 'NIK',
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) => _validateInput(value, 'NIK'),
+                ),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
-                validator: (value) => _validateInput(value, 'Name'),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) => _validateInput(value, 'Name'),
+                ),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
-                controller: _addressController,
-                decoration: InputDecoration(labelText: 'Address'),
-                validator: (value) => _validateInput(value, 'Address'),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: TextFormField(
+                  controller: _addressController,
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) => _validateInput(value, 'Address'),
+                ),
               ),
               SizedBox(height: 16.0),
-              DropdownButtonFormField(
-                value: _selectedCity.isNotEmpty ? _selectedCity : null,
-                items: _cities.map((String city) {
-                  return DropdownMenuItem<String>(
-                    value: city,
-                    child: Text(city),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedCity = value ?? '';
-                  });
-                },
-                decoration: InputDecoration(labelText: 'City'),
-                validator: (value) => _validateInput(value, 'City'),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: DropdownButtonFormField(
+                  value: _selectedCity.isNotEmpty ? _selectedCity : null,
+                  items: _cities.map((String city) {
+                    return DropdownMenuItem<String>(
+                      value: city,
+                      child: Text(city),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedCity = value ?? '';
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'City',
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) => _validateInput(value, 'City'),
+                ),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
-                controller: _nationalityController,
-                decoration: InputDecoration(labelText: 'Nationality'),
-                validator: (value) => _validateInput(value, 'Nationality'),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: TextFormField(
+                  controller: _nationalityController,
+                  decoration: InputDecoration(
+                    labelText: 'Nationality',
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) => _validateInput(value, 'Nationality'),
+                ),
               ),
               SizedBox(height: 16.0),
-              DropdownButtonFormField(
-                value: _selectedGender.isNotEmpty ? _selectedGender : null,
-                items: _genders.map((String gender) {
-                  return DropdownMenuItem<String>(
-                    value: gender,
-                    child: Text(gender),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedGender = value ?? '';
-                  });
-                },
-                decoration: InputDecoration(labelText: 'Gender'),
-                validator: (value) => _validateInput(value, 'Gender'),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: DropdownButtonFormField(
+                  value: _selectedGender.isNotEmpty ? _selectedGender : null,
+                  items: _genders.map((String gender) {
+                    return DropdownMenuItem<String>(
+                      value: gender,
+                      child: Text(gender),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedGender = value ?? '';
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Gender',
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) => _validateInput(value, 'Gender'),
+                ),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
-                controller: _religionController,
-                decoration: InputDecoration(labelText: 'Religion'),
-                validator: (value) => _validateInput(value, 'Religion'),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: TextFormField(
+                  controller: _religionController,
+                  decoration: InputDecoration(
+                    labelText: 'Religion',
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) => _validateInput(value, 'Religion'),
+                ),
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
+                    await SharedPreferences.getInstance();
                     final String? token = prefs.getString('token');
 
                     if (token != null) {
@@ -282,3 +352,4 @@ void main() {
     home: FatherFormInputPage(),
   ));
 }
+

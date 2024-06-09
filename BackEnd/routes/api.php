@@ -10,6 +10,8 @@ use App\Http\Controllers\WorkController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\IntegrationHistoryController;
+use App\Http\Controllers\BarcodeController;
+use App\Http\Controllers\UserController;
 
 
 // Auth routes
@@ -24,29 +26,41 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('personals', [PribadiController::class, 'update']);
     Route::delete('/personals/{id}', [PribadiController::class, 'destroy']);
 
-    //user
+    /// User
     Route::get('user', [AuthController::class, 'getProfile']);
     Route::put('profile', [AuthController::class, 'updateProfile']);
 
-    
+    // Mother
     Route::post('mothers', [MotherController::class, 'store']);
     Route::get('mothers', [MotherController::class, 'index']);
     Route::put('mothers', [MotherController::class, 'update']);
 
+    // Father
     Route::post('fathers', [FatherController::class, 'store']);
     Route::get('fathers', [FatherController::class, 'index']);
     Route::put('fathers', [FatherController::class, 'update']);
 
-    //works
+    // Works
     Route::post('works', [WorkController::class, 'store']);
     Route::get('works', [WorkController::class, 'index']);
-    Route::put('works', [WorkController::class, 'update']);
+    Route::put('works/{id}', [WorkController::class, 'update']);
 
-
-    // education 
+    // Education
     Route::post('educations', [EducationController::class, 'store']);
     Route::get('educations', [EducationController::class, 'index']);
+    Route::put('educations/{id}', [EducationController::class, 'update']);
+    Route::delete('educations/{id}', [EducationController::class, 'destroy']);
 
+    // Barcode and User card
+    Route::get('/barcode/{barcode}', [UserController::class, 'getUserByBarcode']);
+    Route::get('/download_pdf/{barcode}', [UserController::class, 'downloadPdf']);
+    
+    // Personal data routes
+    Route::get('personal', [UserController::class, 'getPersonalData']);
+        
+    // Work data route
+    Route::get('work', [UserController::class, 'getWorkData']);
+    
     // Logout route
     Route::post('logout', [AuthController::class, 'logout']);
 });

@@ -17,7 +17,7 @@ class _FormInputPageState extends State<FormInputPage> {
   final TextEditingController _nationalityController = TextEditingController();
   final TextEditingController _selectedCityController = TextEditingController();
   final TextEditingController _selectedGenderController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _religionController = TextEditingController();
 
   List<String> _cities = [
@@ -96,105 +96,150 @@ class _FormInputPageState extends State<FormInputPage> {
         title: Text('Personal Information'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              TextFormField(
+              _buildTextFormField(
                 controller: _nikController,
-                decoration: InputDecoration(labelText: 'NIK'),
+                label: 'NIK',
                 validator: (value) => _validateInput(value, 'NIK'),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
+              _buildTextFormField(
                 controller: _firstNameController,
-                decoration: InputDecoration(labelText: 'First Name'),
+                label: 'First Name',
                 validator: (value) => _validateInput(value, 'First Name'),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
+              _buildTextFormField(
                 controller: _lastNameController,
-                decoration: InputDecoration(labelText: 'Last Name'),
+                label: 'Last Name',
                 validator: (value) => _validateInput(value, 'Last Name'),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
+              _buildTextFormField(
                 controller: _addressController,
-                decoration: InputDecoration(labelText: 'Address'),
+                label: 'Address',
                 validator: (value) => _validateInput(value, 'Address'),
               ),
               SizedBox(height: 16.0),
-              DropdownButtonFormField(
-                value: _selectedCity.isNotEmpty ? _selectedCity : null,
-                items: _cities.map((String city) {
-                  return DropdownMenuItem<String>(
-                    value: city,
-                    child: Text(city),
-                  );
-                }).toList(),
+              _buildDropdownButtonFormField(
+                value: _selectedCity,
+                items: _cities,
+                label: 'City',
                 onChanged: (String? value) {
                   setState(() {
                     _selectedCity = value ?? '';
                   });
                 },
-                decoration: InputDecoration(labelText: 'City'),
                 validator: (value) => _validateInput(value, 'City'),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
+              _buildTextFormField(
                 controller: _nationalityController,
-                decoration: InputDecoration(labelText: 'Nationality'),
+                label: 'Nationality',
                 validator: (value) => _validateInput(value, 'Nationality'),
               ),
               SizedBox(height: 16.0),
-              DropdownButtonFormField(
-                value: _selectedGender.isNotEmpty ? _selectedGender : null,
-                items: _genders.map((String gender) {
-                  return DropdownMenuItem<String>(
-                    value: gender,
-                    child: Text(gender),
-                  );
-                }).toList(),
+              _buildDropdownButtonFormField(
+                value: _selectedGender,
+                items: _genders,
+                label: 'Gender',
                 onChanged: (String? value) {
                   setState(() {
                     _selectedGender = value ?? '';
                   });
                 },
-                decoration: InputDecoration(labelText: 'Gender'),
                 validator: (value) => _validateInput(value, 'Gender'),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
+              _buildTextFormField(
                 controller: _religionController,
-                decoration: InputDecoration(labelText: 'Religion'),
+                label: 'Religion',
                 validator: (value) => _validateInput(value, 'Religion'),
               ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    final String? token = prefs.getString('token');
+              SizedBox(height: 24.0),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                      final String? token = prefs.getString('token');
 
-                    if (token != null) {
-                      _submitForm(token);
-                    } else {
-                      // Handle the error if token is not found
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Token not found')),
-                      );
+                      if (token != null) {
+                        _submitForm(token);
+                      } else {
+                        // Handle the error if token is not found
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Token not found')),
+                        );
+                      }
                     }
-                  }
-                },
-                child: Text('Save'),
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                    child: Text('Save', style: TextStyle(fontSize: 16.0)),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String label,
+    required String? Function(String?) validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      ),
+      validator: validator,
+    );
+  }
+
+  Widget _buildDropdownButtonFormField({
+    required String value,
+    required List<String> items,
+    required String label,
+    required ValueChanged<String?> onChanged,
+    required String? Function(String?) validator,
+  }) {
+    return DropdownButtonFormField(
+      value: value.isNotEmpty ? value : null,
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      ),
+      validator: validator,
     );
   }
 

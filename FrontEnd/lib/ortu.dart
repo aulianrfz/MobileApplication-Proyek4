@@ -17,14 +17,62 @@ class FormOrtu extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(context, '/mother');
               },
-              child: Text('Mother'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                primary: Colors.blue,
+                elevation: 3,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(
+                    Icons.pregnant_woman, // Ikoni sesuai dengan Mother
+                    size: 30,
+                  ),
+                  Text(
+                    'Mother',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Opacity(
+                    opacity: 0.0,
+                    child: Icon(Icons.pregnant_woman),
+                  ), // Untuk menyeimbangkan ikon di sisi kanan
+                ],
+              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/father');
               },
-              child: Text('Father'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                primary: Colors.green,
+                elevation: 3,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(
+                    Icons.face, // Ikoni sesuai dengan Father
+                    size: 30,
+                  ),
+                  Text(
+                    'Father',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Opacity(
+                    opacity: 0.0,
+                    child: Icon(Icons.face),
+                  ), // Untuk menyeimbangkan ikon di sisi kanan
+                ],
+              ),
             ),
           ],
         ),
