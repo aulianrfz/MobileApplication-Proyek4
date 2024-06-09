@@ -9,5 +9,10 @@ class History extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['app_name', 'generated_at', 'status'];
+    protected $fillable = ['app_name', 'generated_at', 'status', 'user_id'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

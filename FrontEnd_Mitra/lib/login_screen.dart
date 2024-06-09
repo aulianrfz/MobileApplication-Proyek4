@@ -161,22 +161,67 @@ class LoginScreen extends StatelessWidget {
           // Login berhasil
           final responseData = json.decode(response.body);
           final token = responseData['token'];
-          final userId = responseData['user_id'];
+          final userId =
+              responseData['user_id']; // Dapatkan userId dari respons API
 
           // Simpan token dan userId ke dalam shared preferences
           await SharedPreferencesManager.saveUserData(token, userId);
 
-          // Kirim riwayat integrasi
-          await _sendIntegrationHistory();
+          // Kirim data riwayat ke aplikasi integrasi
+          final historyResponse = await http.post(
+            Uri.parse('http://localhost:8000/api/integration-history'),
+            headers: {
+              'Authorization':
+                  'Bearer $token', // Sertakan token jika diperlukan
+            },
+            body: {
+              'app_name': 'QuickFy',
+              'generated_at': DateTime.now().toIso8601String(),
+              'status': 'Login successful',
+              'user_id': userId.toString(),
+            },
+          );
 
           Navigator.pushReplacementNamed(context, '/');
         } else {
           // Gagal login
-          _showErrorDialog(context, 'Login Failed', 'Gagal');
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Login Failed'),
+                content: Text('Gagal'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
         }
       } catch (error) {
         // Tangani kesalahan jaringan atau kesalahan lainnya
-        _showErrorDialog(context, 'Error', 'Kesalahan lain');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Kesalahan lain'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       }
     }
   }
