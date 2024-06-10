@@ -14,11 +14,10 @@ class _FormInputPageState extends State<FormInputPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _nationalityController = TextEditingController();
+  final TextEditingController _selectedNationalityController = TextEditingController();
   final TextEditingController _selectedCityController = TextEditingController();
-  final TextEditingController _selectedGenderController =
-  TextEditingController();
-  final TextEditingController _religionController = TextEditingController();
+  final TextEditingController _selectedGenderController = TextEditingController();
+  final TextEditingController _selectedReligionController = TextEditingController();
 
   List<String> _cities = [
     'New York',
@@ -26,7 +25,55 @@ class _FormInputPageState extends State<FormInputPage> {
     'Chicago',
     'Houston',
     'Phoenix',
-    // Add other cities as needed
+    'Jakarta',
+    'Surabaya',
+    'Bandung',
+    'Medan',
+    'Semarang',
+    'Makassar',
+    'Palembang',
+    'Depok',
+    'Tangerang',
+    'South Tangerang',
+    'Bekasi',
+    'Washington, D.C.', // Amerika Serikat
+    'London', // Inggris
+    'Paris', // Prancis
+    'Berlin', // Jerman
+    'Moscow', // Rusia
+    'Beijing', // Tiongkok
+    'Tokyo', // Jepang
+    'Rome', // Italia
+    'Madrid', // Spanyol
+    'Ottawa', // Kanada
+    'Canberra', // Australia
+    'Brasília', // Brasil
+    'New Delhi', // India
+    'Islamabad', // Pakistan
+    'Bangkok', // Thailand
+    'Hanoi', // Vietnam
+    'Seoul', // Korea Selatan
+    'Ankara', // Turki
+    'Cairo', // Mesir
+    'Nairobi', // Kenya
+    'Athens', // Yunani
+    'Amsterdam', // Belanda
+    'Oslo', // Norwegia
+    'Stockholm', // Swedia
+    'Copenhagen', // Denmark
+    'Helsinki', // Finlandia
+    'Brussels', // Belgia
+    'Vienna', // Austria
+    'Warsaw', // Polandia
+    'Budapest', // Hungaria
+    'Bucharest', // Rumania
+    'Prague', // Republik Ceko
+    'Dublin', // Irlandia
+    'Lisbon', // Portugal
+    'Buenos Aires', // Argentina
+    'Santiago', // Chili
+    'Lima', // Peru
+    'Mexico City', // Meksiko
   ];
 
   List<String> _genders = [
@@ -41,17 +88,216 @@ class _FormInputPageState extends State<FormInputPage> {
     'Hinduism',
     'Buddhism',
     'Judaism',
-    // Add other religions as needed
+  ];
+
+  List<String> _nationalitys = [
+    'Afghanistan',
+    'Albania',
+    'Algeria',
+    'Andorra',
+    'Angola',
+    'Antigua and Barbuda',
+    'Argentina',
+    'Armenia',
+    'Australia',
+    'Austria',
+    'Azerbaijan',
+    'Bahamas',
+    'Bahrain',
+    'Bangladesh',
+    'Barbados',
+    'Belarus',
+    'Belgium',
+    'Belize',
+    'Benin',
+    'Bhutan',
+    'Bolivia',
+    'Bosnia and Herzegovina',
+    'Botswana',
+    'Brazil',
+    'Brunei',
+    'Bulgaria',
+    'Burkina Faso',
+    'Burundi',
+    'Cabo Verde',
+    'Cambodia',
+    'Cameroon',
+    'Canada',
+    'Central African Republic',
+    'Chad',
+    'Chile',
+    'China',
+    'Colombia',
+    'Comoros',
+    'Congo (Congo-Brazzaville)',
+    'Costa Rica',
+    'Croatia',
+    'Cuba',
+    'Cyprus',
+    'Czechia (Czech Republic)',
+    'Democratic Republic of the Congo',
+    'Denmark',
+    'Djibouti',
+    'Dominica',
+    'Dominican Republic',
+    'Ecuador',
+    'Egypt',
+    'El Salvador',
+    'Equatorial Guinea',
+    'Eritrea',
+    'Estonia',
+    'Eswatini (fmr. "Swaziland")',
+    'Ethiopia',
+    'Fiji',
+    'Finland',
+    'France',
+    'Gabon',
+    'Gambia',
+    'Georgia',
+    'Germany',
+    'Ghana',
+    'Greece',
+    'Grenada',
+    'Guatemala',
+    'Guinea',
+    'Guinea-Bissau',
+    'Guyana',
+    'Haiti',
+    'Honduras',
+    'Hungary',
+    'Iceland',
+    'India',
+    'Indonesia',
+    'Iran',
+    'Iraq',
+    'Ireland',
+    'Israel',
+    'Italy',
+    'Jamaica',
+    'Japan',
+    'Jordan',
+    'Kazakhstan',
+    'Kenya',
+    'Kiribati',
+    'Kosovo',
+    'Kuwait',
+    'Kyrgyzstan',
+    'Laos',
+    'Latvia',
+    'Lebanon',
+    'Lesotho',
+    'Liberia',
+    'Libya',
+    'Liechtenstein',
+    'Lithuania',
+    'Luxembourg',
+    'Madagascar',
+    'Malawi',
+    'Malaysia',
+    'Maldives',
+    'Mali',
+    'Malta',
+    'Marshall Islands',
+    'Mauritania',
+    'Mauritius',
+    'Mexico',
+    'Micronesia',
+    'Moldova',
+    'Monaco',
+    'Mongolia',
+    'Montenegro',
+    'Morocco',
+    'Mozambique',
+    'Myanmar (formerly Burma)',
+    'Namibia',
+    'Nauru',
+    'Nepal',
+    'Netherlands',
+    'New Zealand',
+    'Nicaragua',
+    'Niger',
+    'Nigeria',
+    'North Korea',
+    'North Macedonia (formerly Macedonia)'
+    , 'Norway',
+    'Oman',
+    'Pakistan',
+    'Palau',
+    'Palestine State',
+    'Panama',
+    'Papua New Guinea',
+    'Paraguay',
+    'Peru',
+    'Philippines',
+    'Poland',
+    'Portugal',
+    'Qatar',
+    'Romania',
+    'Russia',
+    'Rwanda',
+    'Saint Kitts and Nevis',
+    'Saint Lucia',
+    'Saint Vincent and the Grenadines',
+    'Samoa',
+    'San Marino',
+    'Sao Tome and Principe',
+    'Saudi Arabia',
+    'Senegal',
+    'Serbia',
+    'Seychelles',
+    'Sierra Leone',
+    'Singapore',
+    'Slovakia',
+    'Slovenia',
+    'Solomon Islands',
+    'Somalia',
+    'South Africa',
+    'South Korea',
+    'South Sudan',
+    'Spain',
+    'Sri Lanka',
+    'Sudan',
+    'Suriname',
+    'Sweden',
+    'Switzerland',
+    'Syria',
+    'Taiwan',
+    'Tajikistan',
+    'Tanzania',
+    'Thailand',
+    'Timor-Leste',
+    'Togo',
+    'Tonga',
+    'Trinidad and Tobago',
+    'Tunisia',
+    'Turkey',
+    'Turkmenistan',
+    'Tuvalu',
+    'Uganda',
+    'Ukraine',
+    'United Arab Emirates',
+    'United Kingdom',
+    'United States of America',
+    'Uruguay',
+    'Uzbekistan',
+    'Vanuatu',
+    'Vatican City',
+    'Venezuela',
+    'Vietnam',
+    'Yemen',
+    'Zambia',
+    'Zimbabwe'
   ];
 
   String _selectedCity = '';
   String _selectedGender = '';
   String _selectedReligion = '';
+  String _selectedNationality = '';
+
 
   @override
   void initState() {
     super.initState();
-    // Fetch data when the page loads
     fetchData();
   }
 
@@ -75,9 +321,9 @@ class _FormInputPageState extends State<FormInputPage> {
           _lastNameController.text = responseData['last_name'];
           _addressController.text = responseData['address'];
           _selectedCity = responseData['city'];
-          _nationalityController.text = responseData['nationality'];
+          _selectedNationality = responseData['nationality'];
           _selectedGender = responseData['gender'];
-          _religionController.text = responseData['religion'];
+          _selectedReligion = responseData['religion'];
         });
       } else {
         // Handle if failed to fetch data from backend
@@ -105,7 +351,7 @@ class _FormInputPageState extends State<FormInputPage> {
               _buildTextFormField(
                 controller: _nikController,
                 label: 'NIK',
-                validator: (value) => _validateInput(value, 'NIK'),
+                validator: _validateNIK,
               ),
               SizedBox(height: 16.0),
               _buildTextFormField(
@@ -138,9 +384,15 @@ class _FormInputPageState extends State<FormInputPage> {
                 validator: (value) => _validateInput(value, 'City'),
               ),
               SizedBox(height: 16.0),
-              _buildTextFormField(
-                controller: _nationalityController,
+              _buildDropdownButtonFormField(
+                value: _selectedNationality,
+                items: _nationalitys,
                 label: 'Nationality',
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedNationality = value ?? '';
+                  });
+                },
                 validator: (value) => _validateInput(value, 'Nationality'),
               ),
               SizedBox(height: 16.0),
@@ -156,9 +408,15 @@ class _FormInputPageState extends State<FormInputPage> {
                 validator: (value) => _validateInput(value, 'Gender'),
               ),
               SizedBox(height: 16.0),
-              _buildTextFormField(
-                controller: _religionController,
+              _buildDropdownButtonFormField(
+                value: _selectedReligion,
+                items: _religions,
                 label: 'Religion',
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedReligion = value ?? '';
+                  });
+                },
                 validator: (value) => _validateInput(value, 'Religion'),
               ),
               SizedBox(height: 24.0),
@@ -252,6 +510,7 @@ class _FormInputPageState extends State<FormInputPage> {
       },
     );
 
+
     if (response.statusCode == 200) {
       // If personal data already exists, update it
       final response = await http.put(
@@ -266,9 +525,9 @@ class _FormInputPageState extends State<FormInputPage> {
           'last_name': _lastNameController.text,
           'address': _addressController.text,
           'city': _selectedCity,
-          'nationality': _nationalityController.text,
+          'nationality': _selectedNationality,
           'gender': _selectedGender,
-          'religion': _religionController.text,
+          'religion': _selectedReligion,
         }),
       );
 
@@ -297,9 +556,9 @@ class _FormInputPageState extends State<FormInputPage> {
           'last_name': _lastNameController.text,
           'address': _addressController.text,
           'city': _selectedCity,
-          'nationality': _nationalityController.text,
+          'nationality': _selectedNationality,
           'gender': _selectedGender,
-          'religion': _religionController.text,
+          'religion': _selectedReligion,
         }),
       );
 
@@ -327,6 +586,15 @@ class _FormInputPageState extends State<FormInputPage> {
   String? _validateInput(String? value, String fieldName) {
     if (value == null || value.isEmpty) {
       return 'Please enter your $fieldName';
+    }
+    return null;
+  }
+
+  String? _validateNIK(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your NIK';
+    } else if (!RegExp(r'^\d{10,20}$').hasMatch(value)) {
+      return 'NIK must be a numeric value between 10 and 20 digits';
     }
     return null;
   }

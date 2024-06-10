@@ -25,7 +25,55 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
     'Chicago',
     'Houston',
     'Phoenix',
-    // Add other cities as needed
+    'Jakarta',
+    'Surabaya',
+    'Bandung',
+    'Medan',
+    'Semarang',
+    'Makassar',
+    'Palembang',
+    'Depok',
+    'Tangerang',
+    'South Tangerang',
+    'Bekasi',
+    'Washington, D.C.', // Amerika Serikat
+    'London', // Inggris
+    'Paris', // Prancis
+    'Berlin', // Jerman
+    'Moscow', // Rusia
+    'Beijing', // Tiongkok
+    'Tokyo', // Jepang
+    'Rome', // Italia
+    'Madrid', // Spanyol
+    'Ottawa', // Kanada
+    'Canberra', // Australia
+    'Brasília', // Brasil
+    'New Delhi', // India
+    'Islamabad', // Pakistan
+    'Bangkok', // Thailand
+    'Hanoi', // Vietnam
+    'Seoul', // Korea Selatan
+    'Ankara', // Turki
+    'Cairo', // Mesir
+    'Nairobi', // Kenya
+    'Athens', // Yunani
+    'Amsterdam', // Belanda
+    'Oslo', // Norwegia
+    'Stockholm', // Swedia
+    'Copenhagen', // Denmark
+    'Helsinki', // Finlandia
+    'Brussels', // Belgia
+    'Vienna', // Austria
+    'Warsaw', // Polandia
+    'Budapest', // Hungaria
+    'Bucharest', // Rumania
+    'Prague', // Republik Ceko
+    'Dublin', // Irlandia
+    'Lisbon', // Portugal
+    'Buenos Aires', // Argentina
+    'Santiago', // Chili
+    'Lima', // Peru
+    'Mexico City', // Meksiko
   ];
 
   List<String> _genders = [

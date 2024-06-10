@@ -19,7 +19,7 @@ class FormOrtu extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
@@ -29,7 +29,7 @@ class FormOrtu extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Icon(
-                    Icons.pregnant_woman, // Ikoni sesuai dengan Mother
+                    Icons.woman,
                     size: 30,
                   ),
                   Text(
@@ -39,7 +39,7 @@ class FormOrtu extends StatelessWidget {
                   Opacity(
                     opacity: 0.0,
                     child: Icon(Icons.pregnant_woman),
-                  ), // Untuk menyeimbangkan ikon di sisi kanan
+                  ),
                 ],
               ),
             ),
@@ -50,7 +50,7 @@ class FormOrtu extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                backgroundColor: Colors.green,
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                 ),
@@ -60,7 +60,7 @@ class FormOrtu extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Icon(
-                    Icons.face, // Ikoni sesuai dengan Father
+                    Icons.face,
                     size: 30,
                   ),
                   Text(
@@ -70,7 +70,7 @@ class FormOrtu extends StatelessWidget {
                   Opacity(
                     opacity: 0.0,
                     child: Icon(Icons.face),
-                  ), // Untuk menyeimbangkan ikon di sisi kanan
+                  ),
                 ],
               ),
             ),

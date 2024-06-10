@@ -17,6 +17,11 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
   final TextEditingController _addressController = TextEditingController();
 
   List<String> _cities = [
+    'New York',
+    'Los Angeles',
+    'Chicago',
+    'Houston',
+    'Phoenix',
     'Jakarta',
     'Surabaya',
     'Bandung',
@@ -257,54 +262,88 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
     );
   }
 
-  void _submitForm(String token) async {
-    try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final int? userId = prefs.getInt('user_id');
-
-      if (userId != null) {
-        final response = await http.put(
-          Uri.parse('http://localhost:8000/api/educations/$_educationId'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-          body: json.encode({
-            'school': _schoolController.text,
-            'start_year': _startYearController.text,
-            'end_year': _endYearController.text,
-            'major': _majorController.text,
-            'address': _addressController.text,
-            'city': _selectedCity,
-          }),
-        );
-
-        if (response.statusCode == 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Data updated successfully')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update data')),
-          );
-          print('Failed to update data: ${response.statusCode}');
-          print('Response body: ${response.body}');
-        }
-      } else {
-        print('User ID not found');
-      }
-    } catch (error) {
-      print('Error submitting form: $error');
-    }
-  }
-
-
   String? _validateInput(String? value, String fieldName) {
     if (value == null || value.isEmpty) {
       return 'Please enter your $fieldName';
     }
     return null;
   }
+
+
+  void _submitForm(String token) async {
+    final String school = _schoolController.text;
+    final String startYear = _startYearController.text;
+    final String endYear = _endYearController.text;
+
+    // Validate input fields
+    if (_validateInput(school, 'School') != null ||
+        _validateInput(startYear, 'Start Year') != null ||
+        _validateInput(endYear, 'End Year') != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    // Validate start_year and end_year
+    if (int.parse(startYear) >= int.parse(endYear)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Start year must be before end year')),
+      );
+      return;
+    }
+
+    final Map<String, dynamic> educationData = {
+      'school': school,
+      'start_year': startYear,
+      'end_year': endYear,
+      'major': _majorController.text,
+      'address': _addressController.text,
+      'city': _selectedCity,
+    };
+
+    final Uri url = _educationId != null
+        ? Uri.parse('http://localhost:8000/api/educations/$_educationId')
+        : Uri.parse('http://localhost:8000/api/educations');
+
+    final response = await (_educationId != null
+        ? http.put(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(educationData),
+    )
+        : http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({'educations': [educationData]}), // Wrap data in 'educations' array
+    ));
+
+    if ((response.statusCode == 200 && _educationId != null) ||
+        (response.statusCode == 201 && _educationId == null)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data saved successfully')),
+      );
+      if (_educationId == null) {
+        final responseData = json.decode(response.body)['data'];
+        setState(() {
+          _educationId = responseData['id'];
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save data')),
+      );
+      print('Failed to save data: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+  }
+
 }
 
 void main() {
