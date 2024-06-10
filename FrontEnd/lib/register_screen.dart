@@ -70,26 +70,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register'),
+        title: Text(
+          'register',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 20, // Ubah ukuran font sesuai kebutuhan
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF15144E),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'QuickFy',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue[900],
-                ),
-                textAlign: TextAlign.center,
-              ),
               SizedBox(height: 20),
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF15144E),
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Quick', // Teks pertama
+                    ),
+                    TextSpan(
+                      text: 'Fy', // Teks kedua
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 204, 31,
+                            31), // Ubah warna teks 'Fy' menjadi hijau
+                      ),
+                    ),
+                    TextSpan(
+                      text: '!', // Teks kedua
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 161, 239,
+                            255), // Ubah warna teks 'Fy' menjadi hijau
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 5),
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -174,8 +202,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _register,
-                child: Text('Register'),
+                onPressed: _register, // Fungsi onPressed untuk register
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    Color(0xFF15144E),
+                  ),
+                  minimumSize:
+                      MaterialStateProperty.all<Size>(Size(321, 51.91)),
+                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                      EdgeInsets.symmetric(vertical: 15)),
+                ),
+                child: Text(
+                  'Register',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),

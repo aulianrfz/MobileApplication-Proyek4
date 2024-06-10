@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:singpass/work.dart';
-import 'package:singpass/personal.dart'; // Pastikan import yang diperlukan sudah tersedia.
+import 'package:singpass/history.dart';
+import 'package:singpass/setting.dart'; // Pastikan import yang diperlukan sudah tersedia.
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +11,76 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  int _selectedIndex = 0;
+
+  static List<Widget> _widgetOptions = <Widget>[
+    HomePageContent(),
+    HistoryPage(),
+    SettingPage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _widgetOptions,
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 5,
+        elevation: 10,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            buildBottomNavigationItem(context, Icons.home, "Home", 0),
+            buildBottomNavigationItem(context, Icons.history, "History", 1),
+            buildBottomNavigationItem(
+                context, Icons.account_circle, "Settings", 2),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  Widget buildBottomNavigationItem(
+      BuildContext context, IconData icon, String label, int index) {
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: _selectedIndex == index ? Color(0xFF15144E) : Colors.grey,
+            size: 35,
+          ),
+          Text(
+            label,
+            style: TextStyle(
+                color:
+                    _selectedIndex == index ? Color(0xFF15144E) : Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class HomePageContent extends StatefulWidget {
+  @override
+  _HomePageContentState createState() => _HomePageContentState();
+}
+
+class _HomePageContentState extends State<HomePageContent> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _nikController;
@@ -110,10 +180,6 @@ class _HomepageState extends State<Homepage> {
                           '/notifications'); // Navigasi ke halaman NotificationsPage
                     },
                   ),
-                  Icon(
-                    Icons.settings,
-                    size: 35,
-                  ),
                 ],
               ),
 
@@ -143,6 +209,15 @@ class _HomepageState extends State<Homepage> {
                   decoration: BoxDecoration(
                     color: Colors.lightBlueAccent,
                     borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black
+                            .withOpacity(0.2), // Warna bayangan dengan opasitas
+                        spreadRadius: 5, // Jarak penyebaran bayangan
+                        blurRadius: 7, // Radius blur bayangan
+                        offset: Offset(0, 3), // Posisi bayangan (x, y)
+                      ),
+                    ],
                   ),
                   padding: EdgeInsets.all(16),
                   child: Row(
@@ -207,8 +282,9 @@ class _HomepageState extends State<Homepage> {
                   // Personal button
                   ColorChangeButton(
                     text: 'Personal',
-                    color: const Color(0xFFFA3C81),
+                    color: Color.fromARGB(255, 244, 183, 205),
                     onTap: () {
+                      print('Navigating to /personal');
                       Navigator.pushNamed(context, '/personal');
                     },
                   ),
@@ -216,7 +292,7 @@ class _HomepageState extends State<Homepage> {
                   // Works button
                   ColorChangeButton(
                     text: 'Works',
-                    color: const Color(0xFF996AFD),
+                    color: Color.fromARGB(255, 171, 146, 223),
                     onTap: () {
                       Navigator.pushNamed(context, '/work');
                     },
@@ -225,7 +301,7 @@ class _HomepageState extends State<Homepage> {
                   // Education button
                   ColorChangeButton(
                     text: 'Education',
-                    color: const Color(0xFFB5F16A),
+                    color: const Color(0xFFEADAF4),
                     onTap: () {
                       Navigator.pushNamed(context, '/education');
                     },
@@ -234,9 +310,27 @@ class _HomepageState extends State<Homepage> {
                   // Family button
                   ColorChangeButton(
                     text: 'Family',
-                    color: const Color(0xFFFB7575),
+                    color: Color(0xFF7ADFCD),
                     onTap: () {
                       Navigator.pushNamed(context, '/ortu');
+                    },
+                  ),
+
+                  // Health button
+                  ColorChangeButton(
+                    text: 'Health',
+                    color: const Color(0xFF44EBEB),
+                    onTap: () {
+                      // Add your on-tap logic here
+                    },
+                  ),
+
+                  // Passport button
+                  ColorChangeButton(
+                    text: 'Passport',
+                    color: const Color(0xFFFFAE4F),
+                    onTap: () {
+                      // Add your on-tap logic here
                     },
                   ),
                 ],
@@ -246,48 +340,6 @@ class _HomepageState extends State<Homepage> {
         ),
 
         // Bottom app bar
-        bottomNavigationBar: BottomAppBar(
-          notchMargin: 5,
-          elevation: 20,
-          shape: CircularNotchedRectangle(),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.home,
-                  color: Colors.black,
-                  size: 35,
-                ),
-                onPressed: () {
-                  // Add your on-tap logic here
-                },
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.history,
-                  color: Colors.black,
-                  size: 35,
-                ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/history');
-                  // Add your on-tap logic here
-                },
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.account_circle,
-                  color: Colors.black,
-                  size: 35,
-                ),
-                onPressed: () {
-                  Navigator.pushNamed(
-                      context, '/setting'); // Navigasi ke laman /setting
-                },
-              ),
-            ],
-          ),
-        ),
 
         // Floating action button location
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

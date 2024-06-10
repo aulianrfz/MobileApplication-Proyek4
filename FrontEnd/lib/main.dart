@@ -52,20 +52,48 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('.'),
-      ),
+      backgroundColor: Color(0xFF15144E),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SizedBox(height: 20),
+            RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Quick', // Teks pertama
+                  ),
+                  TextSpan(
+                    text: 'Fy', // Teks kedua
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 204, 31,
+                          31), // Ubah warna teks 'Fy' menjadi hijau
+                    ),
+                  ),
+                  TextSpan(
+                    text: '!', // Teks kedua
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 161, 239,
+                          255), // Ubah warna teks 'Fy' menjadi hijau
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 5),
             Text(
-              'QuickFy',
+              'Q U I C K   I D E N T I F Y', // Teks kedua
               style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[900], // Ubah menjadi biru gelap
+                fontSize: 12,
+                color: Color.fromARGB(255, 161, 239, 255),
               ),
             ),
             SizedBox(height: 50),
@@ -80,14 +108,14 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 minimumSize: MaterialStateProperty.all<Size>(Size(321, 51.91)),
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
               ),
               child: Text(
-                'Login',
+                'login',
                 style: TextStyle(
-                  fontFamily: 'Perpetua',
-                  fontSize: 20,
-                  color: Colors.white, // Ubah menjadi putih
+                  fontFamily: 'Poppins',
+                  fontSize: 15,
+                  color: Color(0xFF15144E), // Ubah menjadi putih
                 ),
               ),
             ),
@@ -103,14 +131,15 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 minimumSize: MaterialStateProperty.all<Size>(Size(321, 51.91)),
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromARGB(255, 163, 244, 255)),
               ),
               child: Text(
-                'Register',
+                'register',
                 style: TextStyle(
-                  fontFamily: 'Perpetua',
-                  fontSize: 20,
-                  color: Colors.white, // Ubah menjadi putih
+                  fontFamily: 'Poppins',
+                  fontSize: 15,
+                  color: Color(0xFF15144E), // Ubah menjadi putih
                 ),
               ),
             ),

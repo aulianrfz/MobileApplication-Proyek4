@@ -14,7 +14,15 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text(
+          'login',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 20, // Ubah ukuran font sesuai kebutuhan
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF15144E),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -23,40 +31,70 @@ class LoginScreen extends StatelessWidget {
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
+                SizedBox(height: 20),
+                RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF15144E),
+                    ),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: 'Quick', // Teks pertama
+                      ),
+                      TextSpan(
+                        text: 'Fy', // Teks kedua
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 204, 31,
+                              31), // Ubah warna teks 'Fy' menjadi hijau
+                        ),
+                      ),
+                      TextSpan(
+                        text: '!', // Teks kedua
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 161, 239,
+                              255), // Ubah warna teks 'Fy' menjadi hijau
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 5),
                 Text(
-                  'QuickFy',
+                  'Q U I C K   I D E N T I F Y', // Teks kedua
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue[900],
+                    fontSize: 12,
+                    color: Color(0xFF15144E),
                   ),
-                  textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 40),
                 buildTextField('Email',
                     isPassword: false, controller: _emailController),
                 SizedBox(height: 20),
                 buildPasswordField('Password', controller: _passwordController),
-                SizedBox(height: 20),
+                SizedBox(height: 25),
                 ElevatedButton(
                   onPressed: () {
                     _login(context);
                   },
                   style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.blue),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      Color(0xFF15144E),
+                    ),
                     minimumSize:
                         MaterialStateProperty.all<Size>(Size(321, 51.91)),
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                         EdgeInsets.symmetric(vertical: 15)),
                   ),
                   child: Text(
-                    'Login',
+                    'login',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontFamily: 'Poppins',
+                      fontSize: 15,
                       color: Colors.white,
                     ),
                   ),

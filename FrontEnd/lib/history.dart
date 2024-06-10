@@ -12,6 +12,7 @@ class HistoryPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('History'),
+        automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<List<HistoryData>>(
         future: _fetchHistory(),
@@ -40,46 +41,6 @@ class HistoryPage extends StatelessWidget {
             );
           }
         },
-      ),
-      bottomNavigationBar: BottomAppBar(
-        notchMargin: 5,
-        elevation: 20,
-        shape: CircularNotchedRectangle(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.home,
-                color: Colors.black,
-                size: 35,
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/homepage');
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.history,
-                color: Colors.black,
-                size: 35,
-              ),
-              onPressed: () {
-                // Add your on-tap logic here
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.account_circle,
-                color: Colors.black,
-                size: 35,
-              ),
-              onPressed: () {
-                // Add your on-tap logic here
-              },
-            ),
-          ],
-        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
