@@ -74,6 +74,7 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
     'Santiago', // Chili
     'Lima', // Peru
     'Mexico City', // Meksiko
+    // Add other cities as needed
   ];
 
   List<String> _genders = [
@@ -160,7 +161,7 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
                     contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
                     border: InputBorder.none,
                   ),
-                  validator: (value) => _validateInput(value, 'NIK'),
+                  validator: _validateNIK,
                 ),
               ),
               SizedBox(height: 16.0),
@@ -385,6 +386,15 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
       print('Failed to fetch data: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
+  }
+
+  String? _validateNIK(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your NIK';
+    } else if (!RegExp(r'^\d{10,20}$').hasMatch(value)) {
+      return 'NIK must be a numeric value between 10 and 20 digits';
+    }
+    return null;
   }
 
   String? _validateInput(String? value, String fieldName) {
