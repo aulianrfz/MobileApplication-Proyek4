@@ -17,18 +17,22 @@ QuickFy adalah aplikasi integrasi data diri otomatis yang berfungsi melalui inte
 - Framework : Laravel 11, Flutter
 - Bahasa pemrograman : PHP
 
+## Folder
+1. FrontEnd : digunakan sebagai FrontEnd aplikasi integrasi QuickFy
+2. FrontEnd_Mitra : digunakan sebagai FrontEnd aplikasi mitra atau aplikasi lain sebagai percobaan apakah integrasi berhasil atau tidak
+3. BackEnd : digunakan sebagai BackEnd aplikasi integrasi
+
 ## Installations 
 
 ### Instalasi Website Laravel + API
-1. Unduh proyek (atau clone menggunakan GIT) dengan nama ...
+1. Unduh proyek (atau clone menggunakan GIT)
 2. Salin .env.example ke .env dan konfigurasikan kredensial database
 3. Arahkan ke direktori root proyek menggunakan terminal
-4. Jalankan `composer install`
-5. Tetapkan kunci enkripsi dengan menjalankan `php artisan key:generate --ansi`
-6. Jalankan migrasi `php artisan migrate --seed`
-7. Mulai server lokal dengan menjalankan `php artisan serve`
+4. Jalankan `composer install` or `composer update`
+5. Jalankan migrasi `php artisan migrate --seed`
+6. Mulai server lokal dengan menjalankan `php artisan serve`
 
 ### Instalasi Flutter
-1. Unduh proyek (atau clone menggunakan GIT) dengan nama ...
-2. Pastikan Anda sudah menyiapkan flutter di VS Code dan emulator Android
+1. Unduh proyek (atau clone menggunakan GIT) 
+2. Pastikan sudah menyiapkan flutter di VS Code dan emulator Android (jika ingin menjalankan kode menggunakan emulator)
 3. Tekan F5 atau bisa juga membuka di terminal dan jalankan `flutter pub get` kemudian `flutter run` untuk menjalankan aplikasi
