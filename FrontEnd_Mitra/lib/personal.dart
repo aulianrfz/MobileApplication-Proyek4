@@ -17,8 +17,6 @@ class _FormInputPageState extends State<FormInputPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _nationalityController = TextEditingController();
-  final TextEditingController _religionController = TextEditingController();
   final TextEditingController _facebookController = TextEditingController();
   final TextEditingController _twitterController = TextEditingController();
   final TextEditingController _instagramController = TextEditingController();
@@ -40,9 +38,7 @@ class _FormInputPageState extends State<FormInputPage> {
     'name': '',
     'address': '',
     'city': '',
-    'nationality': '',
     'gender': '',
-    'religion': '',
   };
 
   UserData? _userData;
@@ -64,9 +60,7 @@ class _FormInputPageState extends State<FormInputPage> {
         _lastNameController.text = userData.lastName;
         _addressController.text = userData.address;
         _selectedCity = userData.city;
-        _nationalityController.text = userData.nationality;
         _selectedGender = userData.gender;
-        _religionController.text = userData.religion;
       });
     } else {
       print('Failed to fetch user data');
@@ -83,133 +77,180 @@ class _FormInputPageState extends State<FormInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Personal Information'),
+        title: Text('Data Pengisian'),
         automaticallyImplyLeading: false,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextFormField(
-                controller: _nikController,
-                decoration: InputDecoration(labelText: 'NIK'),
-                validator: (value) => _validateInput(value, 'NIK'),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _firstNameController,
-                decoration: InputDecoration(labelText: 'First Name'),
-                validator: (value) => _validateInput(value, 'First Name'),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _lastNameController,
-                decoration: InputDecoration(labelText: 'Last Name'),
-                validator: (value) => _validateInput(value, 'Last Name'),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _addressController,
-                decoration: InputDecoration(labelText: 'Address'),
-                validator: (value) => _validateInput(value, 'Address'),
-              ),
-              SizedBox(height: 16.0),
-              DropdownButtonFormField(
-                value: _selectedCity.isNotEmpty ? _selectedCity : null,
-                items: _cities.map((String city) {
-                  return DropdownMenuItem<String>(
-                    value: city,
-                    child: Text(city),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedCity = value ?? '';
-                  });
-                },
-                decoration: InputDecoration(labelText: 'City'),
-                validator: (value) => _validateInput(value, 'City'),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _nationalityController,
-                decoration: InputDecoration(labelText: 'Nationality'),
-                validator: (value) => _validateInput(value, 'Nationality'),
-              ),
-              SizedBox(height: 16.0),
-              DropdownButtonFormField(
-                value: _selectedGender.isNotEmpty ? _selectedGender : null,
-                items: _genders.map((String gender) {
-                  return DropdownMenuItem<String>(
-                    value: gender,
-                    child: Text(gender),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedGender = value ?? '';
-                  });
-                },
-                decoration: InputDecoration(labelText: 'Gender'),
-                validator: (value) => _validateInput(value, 'Gender'),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _religionController,
-                decoration: InputDecoration(labelText: 'Religion'),
-                validator: (value) => _validateInput(value, 'Religion'),
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _facebookController,
-                decoration: InputDecoration(labelText: 'Facebook'),
-                // You can add validation or customize as needed
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _twitterController,
-                decoration: InputDecoration(labelText: 'Twitter'),
-                // You can add validation or customize as needed
-              ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _instagramController,
-                decoration: InputDecoration(labelText: 'Instagram'),
-                // You can add validation or customize as needed
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  _navigateToFatherFormPage(context);
-                },
-                child: Text('Enter Father\'s Information'),
-              ),
-              SizedBox(height: 16.0),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/login');
-                },
-                child: Text(
-                  'Generate with QuickFY?',
-                  style: TextStyle(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
+      body: Container(
+        color: Color.fromARGB(
+            255, 210, 210, 209), // Change this to the desired background color
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TextFormField(
+                  controller: _nikController,
+                  decoration: InputDecoration(
+                    labelText: 'NIK',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  validator: (value) => _validateInput(value, 'NIK'),
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _firstNameController,
+                  decoration: InputDecoration(
+                    labelText: 'First Name',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  validator: (value) => _validateInput(value, 'First Name'),
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _lastNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Last Name',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  validator: (value) => _validateInput(value, 'Last Name'),
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _addressController,
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  validator: (value) => _validateInput(value, 'Address'),
+                ),
+                SizedBox(height: 16.0),
+                DropdownButtonFormField(
+                  value: _selectedCity.isNotEmpty ? _selectedCity : null,
+                  items: _cities.map((String city) {
+                    return DropdownMenuItem<String>(
+                      value: city,
+                      child: Text(city),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedCity = value ?? '';
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'City',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  validator: (value) => _validateInput(value, 'City'),
+                ),
+                SizedBox(height: 16.0),
+                DropdownButtonFormField(
+                  value: _selectedGender.isNotEmpty ? _selectedGender : null,
+                  items: _genders.map((String gender) {
+                    return DropdownMenuItem<String>(
+                      value: gender,
+                      child: Text(gender),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedGender = value ?? '';
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Gender',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  validator: (value) => _validateInput(value, 'Gender'),
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _facebookController,
+                  decoration: InputDecoration(
+                    labelText: 'Facebook',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  // You can add validation or customize as needed
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _twitterController,
+                  decoration: InputDecoration(
+                    labelText: 'Twitter',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  // You can add validation or customize as needed
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _instagramController,
+                  decoration: InputDecoration(
+                    labelText: 'Instagram',
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  // You can add validation or customize as needed
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  onPressed: () {
+                    _navigateToFatherFormPage(context);
+                  },
+                  child: Text(
+                    'Next',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _submitForm();
-                  }
-                },
-                child: Text('Save'),
-              ),
-            ],
+                SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/login');
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Generate with QuickFY?',
+                      style: TextStyle(
+                        color: Color(0xFF15144E),
+                        decoration: TextDecoration.underline,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -247,9 +288,7 @@ class _FormInputPageState extends State<FormInputPage> {
           'last_name': _lastNameController.text.trim(),
           'address': _addressController.text.trim(),
           'city': _selectedCity.trim(),
-          'nationality': _nationalityController.text.trim(),
           'gender': _selectedGender.trim(),
-          'religion': _religionController.text.trim(),
           'facebook': _facebookController.text.trim(),
           'twitter': _twitterController.text.trim(),
           'instagram': _instagramController.text.trim(),
