@@ -36,3 +36,6 @@ QuickFy adalah aplikasi integrasi data diri otomatis yang berfungsi melalui inte
 1. Unduh proyek (atau clone menggunakan GIT) 
 2. Pastikan sudah menyiapkan flutter di VS Code dan emulator Android (jika ingin menjalankan kode menggunakan emulator)
 3. Tekan F5 atau bisa juga membuka di terminal dan jalankan `flutter pub get` kemudian `flutter run` untuk menjalankan aplikasi
+
+### Dokumentasi API
+https://docs.google.com/document/d/1_TXrrjhoY4k2KUZT__qYlPruDUaOFsN2TozIX-jzC7g/edit?usp=sharing
