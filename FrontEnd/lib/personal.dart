@@ -14,10 +14,13 @@ class _FormInputPageState extends State<FormInputPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _selectedNationalityController = TextEditingController();
+  final TextEditingController _selectedNationalityController =
+      TextEditingController();
   final TextEditingController _selectedCityController = TextEditingController();
-  final TextEditingController _selectedGenderController = TextEditingController();
-  final TextEditingController _selectedReligionController = TextEditingController();
+  final TextEditingController _selectedGenderController =
+      TextEditingController();
+  final TextEditingController _selectedReligionController =
+      TextEditingController();
 
   List<String> _cities = [
     'New York',
@@ -218,8 +221,8 @@ class _FormInputPageState extends State<FormInputPage> {
     'Niger',
     'Nigeria',
     'North Korea',
-    'North Macedonia (formerly Macedonia)'
-    , 'Norway',
+    'North Macedonia (formerly Macedonia)',
+    'Norway',
     'Oman',
     'Pakistan',
     'Palau',
@@ -293,7 +296,6 @@ class _FormInputPageState extends State<FormInputPage> {
   String _selectedGender = '';
   String _selectedReligion = '';
   String _selectedNationality = '';
-
 
   @override
   void initState() {
@@ -425,7 +427,7 @@ class _FormInputPageState extends State<FormInputPage> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
+                          await SharedPreferences.getInstance();
                       final String? token = prefs.getString('token');
 
                       if (token != null) {
@@ -439,7 +441,8 @@ class _FormInputPageState extends State<FormInputPage> {
                     }
                   },
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
                     child: Text('Save', style: TextStyle(fontSize: 16.0)),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -509,7 +512,6 @@ class _FormInputPageState extends State<FormInputPage> {
         'Authorization': 'Bearer $token',
       },
     );
-
 
     if (response.statusCode == 200) {
       // If personal data already exists, update it

@@ -1,4 +1,3 @@
-// login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,10 +14,10 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'login',
+          'Login',
           style: TextStyle(
             fontFamily: 'Poppins',
-            fontSize: 20, // Ubah ukuran font sesuai kebutuhan
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Color(0xFF15144E),
           ),
@@ -42,21 +41,17 @@ class LoginScreen extends StatelessWidget {
                       color: Color(0xFF15144E),
                     ),
                     children: <TextSpan>[
+                      TextSpan(text: 'Quick'),
                       TextSpan(
-                        text: 'Quick', // Teks pertama
-                      ),
-                      TextSpan(
-                        text: 'Fy', // Teks kedua
+                        text: 'Fy',
                         style: TextStyle(
-                          color: Color.fromARGB(255, 204, 31,
-                              31), // Ubah warna teks 'Fy' menjadi hijau
+                          color: Color.fromARGB(255, 204, 31, 31),
                         ),
                       ),
                       TextSpan(
-                        text: '!', // Teks kedua
+                        text: '!',
                         style: TextStyle(
-                          color: Color.fromARGB(255, 161, 239,
-                              255), // Ubah warna teks 'Fy' menjadi hijau
+                          color: Color.fromARGB(255, 161, 239, 255),
                         ),
                       ),
                     ],
@@ -64,7 +59,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  'Q U I C K   I D E N T I F Y', // Teks kedua
+                  'Q U I C K   I D E N T I F Y',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 12,
@@ -88,10 +83,11 @@ class LoginScreen extends StatelessWidget {
                     minimumSize:
                         MaterialStateProperty.all<Size>(Size(321, 51.91)),
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                        EdgeInsets.symmetric(vertical: 15)),
+                      EdgeInsets.symmetric(vertical: 15),
+                    ),
                   ),
                   child: Text(
-                    'login',
+                    'Login',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 15,
@@ -128,7 +124,11 @@ class LoginScreen extends StatelessWidget {
             controller: controller,
             obscureText: isPassword,
             validator: (value) {
-              if (label == 'Email' && !value!.contains('@')) {
+              if (value == null || value.isEmpty) {
+                return '$label is required';
+              }
+              if (label == 'Email' &&
+                  !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
                 return 'Please enter a valid email';
               }
               return null;
@@ -161,21 +161,33 @@ class LoginScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           padding: EdgeInsets.symmetric(horizontal: 10),
-          child: TextFormField(
-            controller: controller,
-            obscureText: _obscureText,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  _obscureText = !_obscureText;
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return TextFormField(
+                controller: controller,
+                obscureText: _obscureText,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '$label is required';
+                  }
+                  return null;
                 },
-              ),
-            ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],
@@ -197,24 +209,20 @@ class LoginScreen extends StatelessWidget {
         );
 
         if (response.statusCode == 200) {
-          // Login berhasil
           final responseData = json.decode(response.body);
           final token = responseData['token'];
-          final userId =
-              responseData['user_id']; // Dapatkan userId dari respons API
+          final userId = responseData['user_id'];
 
-          // Simpan token dan userId ke dalam shared preferences
           await SharedPreferencesManager.saveUserData(token, userId);
 
           Navigator.pushReplacementNamed(context, '/homepage');
         } else {
-          // Gagal login
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text('Login Failed'),
-                content: Text('Gagal'),
+                content: Text('Incorrect email or password'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
@@ -228,13 +236,12 @@ class LoginScreen extends StatelessWidget {
           );
         }
       } catch (error) {
-        // Tangani kesalahan jaringan atau kesalahan lainnya
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text('Kesalahan lain'),
+              content: Text('An unexpected error occurred'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {

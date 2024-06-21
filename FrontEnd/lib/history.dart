@@ -64,7 +64,7 @@ class HistoryPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'App Name: $appName',
+                '$appName',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
