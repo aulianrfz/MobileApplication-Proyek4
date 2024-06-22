@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:singpass/history.dart';
-import 'package:singpass/setting.dart'; // Pastikan import yang diperlukan sudah tersedia.
+import 'package:singpass/setting.dart';
+import 'package:singpass/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:printing/printing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Homepage extends StatefulWidget {
@@ -125,15 +131,12 @@ class _HomePageContentState extends State<HomePageContent> {
           _nikController.text = responseData['nik'];
         });
       } else {
-        // Handle if failed to fetch data from backend
         print('Failed to fetch data: ${response.statusCode}');
       }
     } else {
-      // Handle if token not found
       print('Token not found');
     }
 
-    //work
     if (token != null) {
       final response = await http.get(
         Uri.parse('http://localhost:8000/api/works'),
@@ -148,261 +151,200 @@ class _HomePageContentState extends State<HomePageContent> {
           _positionController.text = responseData['position'];
         });
       } else {
-        // Handle if failed to fetch data from backend
         print('Failed to fetch data: ${response.statusCode}');
       }
     } else {
-      // Handle if token not found
       print('Token not found');
     }
   }
 
+  Future<Uint8List> _generatePdf() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Center(
+            child: pw.Column(
+              children: [
+                pw.Text('NIK: ${_nikController.text}',
+                    style: pw.TextStyle(fontSize: 20)),
+                pw.Text(
+                    'Name: ${_firstNameController.text} ${_lastNameController.text}',
+                    style: pw.TextStyle(fontSize: 20)),
+                pw.Text('Position: ${_positionController.text}',
+                    style: pw.TextStyle(fontSize: 14)),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+
+    return pdf.save();
+  }
+
+  Future<String> _savePdf(Uint8List pdfBytes) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/profile.pdf');
+    await file.writeAsBytes(pdfBytes);
+    return file.path;
+  }
+
+  Future<void> _openPdf(String filePath) async {
+    await Printing.layoutPdf(
+      onLayout: (format) async => File(filePath).readAsBytesSync(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Icon notifications
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.notifications,
-                      size: 35,
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamed(context,
-                          '/notifications'); // Navigasi ke halaman NotificationsPage
-                    },
-                  ),
-                ],
-              ),
-
-              // Center the welcome text
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Text(
-                    'Welcome back, ${_firstNameController.text}!',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+              IconButton(
+                icon: Icon(
+                  Icons.notifications,
+                  size: 35,
                 ),
-              ),
-              SizedBox(height: 30),
-              // Container for personal information
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/barcode');
+                onPressed: () {
+                  Navigator.pushNamed(context, '/notifications');
                 },
-                child: Container(
-                  width: double.infinity,
-                  height: 165,
-                  margin: EdgeInsets.symmetric(vertical: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.lightBlueAccent,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black
-                            .withOpacity(0.2), // Warna bayangan dengan opasitas
-                        spreadRadius: 5, // Jarak penyebaran bayangan
-                        blurRadius: 7, // Radius blur bayangan
-                        offset: Offset(0, 3), // Posisi bayangan (x, y)
-                      ),
-                    ],
-                  ),
-                  padding: EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      // Background circles
-
-                      // Profile image
-                      CircleAvatar(
-                        radius: 60,
-                        backgroundImage: AssetImage('assets/profile.png'),
-                      ),
-                      SizedBox(width: 20), // Spacer
-
-                      // Name and Role text
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            _nikController.text,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            '${_firstNameController.text} ${_lastNameController.text}',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            _positionController.text,
-                            style: TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Identity text
-              Text(
-                'Identity',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 30),
-
-              // Buttons
-              Wrap(
-                spacing: 20,
-                runSpacing: 20,
-                children: [
-                  // Personal button
-                  ColorChangeButton(
-                    text: 'Personal',
-                    color: Color.fromARGB(255, 244, 183, 205),
-                    onTap: () {
-                      print('Navigating to /personal');
-                      Navigator.pushNamed(context, '/personal');
-                    },
-                  ),
-
-                  // Works button
-                  ColorChangeButton(
-                    text: 'Works',
-                    color: Color.fromARGB(255, 171, 146, 223),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/work');
-                    },
-                  ),
-
-                  // Education button
-                  ColorChangeButton(
-                    text: 'Education',
-                    color: const Color(0xFFEADAF4),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/education');
-                    },
-                  ),
-
-                  // Family button
-                  ColorChangeButton(
-                    text: 'Family',
-                    color: Color(0xFF7ADFCD),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/ortu');
-                    },
-                  ),
-
-                  // Health button
-                  ColorChangeButton(
-                    text: 'Health',
-                    color: const Color(0xFF44EBEB),
-                    onTap: () {
-                      // Add your on-tap logic here
-                    },
-                  ),
-
-                  // Passport button
-                  ColorChangeButton(
-                    text: 'Passport',
-                    color: const Color(0xFFFFAE4F),
-                    onTap: () {
-                      // Add your on-tap logic here
-                    },
-                  ),
-                ],
               ),
             ],
           ),
-        ),
-
-        // Bottom app bar
-
-        // Floating action button location
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      ),
-    );
-  }
-}
-
-class ColorChangeButton extends StatefulWidget {
-  final String text;
-  final Color color;
-  final Function onTap;
-
-  const ColorChangeButton({
-    required this.text,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  _ColorChangeButtonState createState() => _ColorChangeButtonState();
-}
-
-class _ColorChangeButtonState extends State<ColorChangeButton> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) {
-        setState(() {
-          _isPressed = true;
-        });
-      },
-      onTapUp: (_) {
-        setState(() {
-          _isPressed = false;
-        });
-        widget.onTap();
-      },
-      onTapCancel: () {
-        setState(() {
-          _isPressed = false;
-        });
-      },
-      child: AnimatedContainer(
-        width: 175,
-        height: 105,
-        duration: Duration(milliseconds: 150),
-        decoration: BoxDecoration(
-          color: _isPressed ? Colors.grey.withOpacity(0.6) : widget.color,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Text(
-            widget.text,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: _isPressed ? Colors.white : Colors.black,
+          Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: Text(
+                'Welcome back, ${_firstNameController.text}!',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
-        ),
+          SizedBox(height: 30),
+          GestureDetector(
+            onTap: () async {
+              final pdfBytes = await _generatePdf();
+              final filePath = await _savePdf(pdfBytes);
+              await _openPdf(filePath);
+            },
+            child: Container(
+              width: double.infinity,
+              height: 165,
+              margin: EdgeInsets.symmetric(vertical: 20),
+              decoration: BoxDecoration(
+                color: Colors.lightBlueAccent,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundImage: AssetImage('assets/profile.png'),
+                  ),
+                  SizedBox(width: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _nikController.text,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        '${_firstNameController.text} ${_lastNameController.text}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        _positionController.text,
+                        style: TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Text(
+            'Identity',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 30),
+          Wrap(
+            spacing: 20,
+            runSpacing: 20,
+            children: [
+              ColorChangeButton(
+                text: 'Personal',
+                color: Color.fromARGB(255, 244, 183, 205),
+                onTap: () {
+                  Navigator.pushNamed(context, '/personal');
+                },
+              ),
+              ColorChangeButton(
+                text: 'Works',
+                color: Color.fromARGB(255, 171, 146, 223),
+                onTap: () {
+                  Navigator.pushNamed(context, '/work');
+                },
+              ),
+              ColorChangeButton(
+                text: 'Education',
+                color: const Color(0xFFEADAF4),
+                onTap: () {
+                  Navigator.pushNamed(context, '/education');
+                },
+              ),
+              ColorChangeButton(
+                text: 'Family',
+                color: Color(0xFF7ADFCD),
+                onTap: () {
+                  Navigator.pushNamed(context, '/ortu');
+                },
+              ),
+              ColorChangeButton(
+                text: 'Health',
+                color: const Color(0xFF44EBEB),
+                onTap: () {},
+              ),
+              ColorChangeButton(
+                text: 'Passport',
+                color: const Color(0xFFFFAE4F),
+                onTap: () {},
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
