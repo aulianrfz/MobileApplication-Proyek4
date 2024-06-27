@@ -20,6 +20,7 @@ class CreatePribadisTable extends Migration
             $table->string('nationality');
             $table->string('gender');
             $table->string('religion');
+            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }

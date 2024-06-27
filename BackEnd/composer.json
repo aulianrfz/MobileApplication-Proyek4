@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "defuse/php-encryption": "^2.4",
         "kreait/firebase-php": "^7.12",
         "laravel/framework": "^11.0",
         "laravel/passport": "^12.1",

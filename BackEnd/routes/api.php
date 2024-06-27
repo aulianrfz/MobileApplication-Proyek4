@@ -11,6 +11,7 @@ use App\Http\Controllers\EducationController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\IntegrationHistoryController;
 use App\Http\Controllers\BarcodeController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 
@@ -18,14 +19,15 @@ use App\Http\Controllers\NotificationController;
 // Auth routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::post('/password_request', [AuthController::class, 'passwordResetRequest']);
+Route::post('/reset_password', [AuthController::class, 'resetPassword']);
 
 // Group routes that require authentication
 Route::middleware('auth:sanctum')->group(function () {
     // Personal data routes
-    Route::post('personals', [PribadiController::class, 'store']);
     Route::get('/personals', [PribadiController::class, 'index']);
-    Route::put('personals', [PribadiController::class, 'update']);
-    Route::delete('/personals/{id}', [PribadiController::class, 'destroy']);
+    Route::post('/personals', [PribadiController::class, 'store']);
+    Route::post('/personals', [PribadiController::class, 'update']);
 
     /// User
     Route::get('user', [AuthController::class, 'getProfile']);
@@ -53,9 +55,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('educations/{id}', [EducationController::class, 'destroy']);
 
     // Barcode and User card
-    Route::get('/barcode/{barcode}', [UserController::class, 'getUserByBarcode']);
-    Route::get('/download_pdf/{barcode}', [UserController::class, 'downloadPdf']);
-    
+    Route::post('/pdf/upload', [PdfController::class, 'uploadPdf']);
+    Route::get('/pdf/download/{filename}', [PdfController::class, 'downloadPdf']);
+
     // Personal data routes
     Route::get('personal', [UserController::class, 'getPersonalData']);
         

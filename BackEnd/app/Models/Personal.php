@@ -19,6 +19,7 @@ class Personal extends Model
         'nationality',
         'gender',
         'religion',
+        'photo',
     ];
 
     public function user()
