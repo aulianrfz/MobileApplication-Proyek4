@@ -8,7 +8,8 @@ class RegisterScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   void _register(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -19,7 +20,8 @@ class RegisterScreen extends StatelessWidget {
 
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8000/api/register'), // Adjust with your Laravel server address
+          Uri.parse(
+              'http://10.0.2.2:8000/api/register'), // Adjust with your Laravel server address
           body: {
             'name': name,
             'email': email,
@@ -143,7 +145,8 @@ class RegisterScreen extends StatelessWidget {
                   labelText: 'Email Address',
                 ),
                 validator: (value) {
-                  if (value?.isEmpty ?? true || !(value?.contains('@') ?? false)) {
+                  if (value?.isEmpty ??
+                      true || !(value?.contains('@') ?? false)) {
                     return 'Please enter a valid email address';
                   }
                   return null;
@@ -185,7 +188,8 @@ class RegisterScreen extends StatelessWidget {
                   labelText: 'Confirm Password',
                 ),
                 validator: (value) {
-                  if (value?.isEmpty ?? true || value != _passwordController.text) {
+                  if (value?.isEmpty ??
+                      true || value != _passwordController.text) {
                     return 'Passwords do not match';
                   }
                   return null;
@@ -199,7 +203,7 @@ class RegisterScreen extends StatelessWidget {
                     Color(0xFF15144E),
                   ),
                   minimumSize:
-                  MaterialStateProperty.all<Size>(Size(321, 51.91)),
+                      MaterialStateProperty.all<Size>(Size(321, 51.91)),
                   padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                       EdgeInsets.symmetric(vertical: 15)),
                 ),

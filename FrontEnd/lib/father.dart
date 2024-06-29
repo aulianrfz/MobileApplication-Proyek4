@@ -16,7 +16,7 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
   final TextEditingController _selectedCityController = TextEditingController();
   final TextEditingController _nationalityController = TextEditingController();
   final TextEditingController _selectedGenderController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController _religionController = TextEditingController();
 
   List<String> _cities = [
@@ -109,7 +109,7 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/fathers'),
+        Uri.parse('http://10.0.2.2:8000/api/fathers'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -287,7 +287,7 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
+                        await SharedPreferences.getInstance();
                     final String? token = prefs.getString('token');
 
                     if (token != null) {
@@ -312,7 +312,7 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
   void _submitForm(String token) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.get(
-      Uri.parse('http://localhost:8000/api/fathers'),
+      Uri.parse('http://10.0.2.2:8000/api/fathers'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -321,7 +321,7 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
     if (response.statusCode == 200) {
       // If father data already exists, update it
       final response = await http.put(
-        Uri.parse('http://localhost:8000/api/fathers'),
+        Uri.parse('http://10.0.2.2:8000/api/fathers'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -351,7 +351,7 @@ class _FatherFormInputPageState extends State<FatherFormInputPage> {
     } else if (response.statusCode == 404) {
       // If father data does not exist, create it
       final response = await http.post(
-        Uri.parse('http://localhost:8000/api/fathers'),
+        Uri.parse('http://10.0.2.2:8000/api/fathers'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -410,4 +410,3 @@ void main() {
     home: FatherFormInputPage(),
   ));
 }
-

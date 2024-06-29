@@ -88,7 +88,7 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/educations'),
+        Uri.parse('http://10.0.2.2:8000/api/educations'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -187,7 +187,8 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
                 child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      final SharedPreferences prefs = await SharedPreferences.getInstance();
+                      final SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
                       final String? token = prefs.getString('token');
 
                       if (token != null) {
@@ -200,7 +201,8 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
                     }
                   },
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
                     child: Text('Save', style: TextStyle(fontSize: 16.0)),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -269,7 +271,6 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
     return null;
   }
 
-
   void _submitForm(String token) async {
     final String school = _schoolController.text;
     final String startYear = _startYearController.text;
@@ -303,26 +304,28 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
     };
 
     final Uri url = _educationId != null
-        ? Uri.parse('http://localhost:8000/api/educations/$_educationId')
-        : Uri.parse('http://localhost:8000/api/educations');
+        ? Uri.parse('http://10.0.2.2:8000/api/educations/$_educationId')
+        : Uri.parse('http://10.0.2.2:8000/api/educations');
 
     final response = await (_educationId != null
         ? http.put(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: json.encode(educationData),
-    )
+            url,
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: json.encode(educationData),
+          )
         : http.post(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: json.encode({'educations': [educationData]}), // Wrap data in 'educations' array
-    ));
+            url,
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              'educations': [educationData]
+            }), // Wrap data in 'educations' array
+          ));
 
     if ((response.statusCode == 200 && _educationId != null) ||
         (response.statusCode == 201 && _educationId == null)) {
@@ -343,7 +346,6 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
       print('Response body: ${response.body}');
     }
   }
-
 }
 
 void main() {

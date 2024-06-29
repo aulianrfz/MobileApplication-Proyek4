@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 class ForgotPasswordScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -67,7 +68,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty || value != _passwordController.text) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      value != _passwordController.text) {
                     return 'Passwords do not match';
                   }
                   return null;
@@ -95,7 +98,7 @@ class ForgotPasswordScreen extends StatelessWidget {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8000/api/reset_password'),
+        Uri.parse('http://10.0.2.2:8000/api/reset_password'),
         body: {
           'email': email,
           'password': newPassword,

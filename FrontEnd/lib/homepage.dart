@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:singpass/history.dart';
+import 'package:singpass/setting.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
@@ -11,21 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui' as ui;
 import 'package:barcode/barcode.dart';
 import 'package:barcode_widget/barcode_widget.dart'; // Import this package
-
-// Dummy classes for HistoryPage and SettingPage to prevent errors
-class HistoryPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(); // Replace with actual implementation
-  }
-}
-
-class SettingPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(); // Replace with actual implementation
-  }
-}
 
 class Homepage extends StatefulWidget {
   @override
@@ -63,7 +50,8 @@ class _HomepageState extends State<Homepage> {
           children: [
             buildBottomNavigationItem(context, Icons.home, "Home", 0),
             buildBottomNavigationItem(context, Icons.history, "History", 1),
-            buildBottomNavigationItem(context, Icons.account_circle, "Settings", 2),
+            buildBottomNavigationItem(
+                context, Icons.account_circle, "Settings", 2),
           ],
         ),
       ),
@@ -71,7 +59,8 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  Widget buildBottomNavigationItem(BuildContext context, IconData icon, String label, int index) {
+  Widget buildBottomNavigationItem(
+      BuildContext context, IconData icon, String label, int index) {
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       child: Column(
@@ -86,8 +75,8 @@ class _HomepageState extends State<Homepage> {
           Text(
             label,
             style: TextStyle(
-              color: _selectedIndex == index ? Color(0xFF15144E) : Colors.grey,
-            ),
+                color:
+                    _selectedIndex == index ? Color(0xFF15144E) : Colors.grey),
           ),
         ],
       ),
@@ -135,7 +124,7 @@ class _HomePageContentState extends State<HomePageContent> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/personals'),
+        Uri.parse('http://10.0.2.2:8000/api/personals'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -158,7 +147,7 @@ class _HomePageContentState extends State<HomePageContent> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/works'),
+        Uri.parse('http://10.0.2.2:8000/api/works'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -178,8 +167,8 @@ class _HomePageContentState extends State<HomePageContent> {
   }
 
   Future<pw.Document> _generatePdf() async {
-    final RenderRepaintBoundary boundary =
-    _containerKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    final RenderRepaintBoundary boundary = _containerKey.currentContext!
+        .findRenderObject() as RenderRepaintBoundary;
     final image = await boundary.toImage();
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     final pngBytes = byteData!.buffer.asUint8List();
@@ -439,7 +428,7 @@ class ColorChangeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: color,
+        backgroundColor: color,
         minimumSize: Size(180, 100),
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         shape: RoundedRectangleBorder(

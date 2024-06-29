@@ -44,7 +44,7 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/social_media'),
+        Uri.parse('http://10.0.2.2:8000/api/social_media'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -96,14 +96,14 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
                 controller: _instagramController,
                 label: 'Instagram',
                 obscureText: false, // Biarkan false untuk menampilkan teks asli
-                validator: (value) =>
-                    _validateInput(value, 'Instagram'),
+                validator: (value) => _validateInput(value, 'Instagram'),
               ),
               SizedBox(height: 16.0),
               _buildTextFormField(
                 controller: _linkedInController,
                 label: 'LinkedIn Platform',
-                validator: (value) => _validateInput(value, 'LinkedIn Platform'),
+                validator: (value) =>
+                    _validateInput(value, 'LinkedIn Platform'),
               ),
               SizedBox(height: 24.0),
               Center(
@@ -111,7 +111,7 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
+                          await SharedPreferences.getInstance();
                       final String? token = prefs.getString('token');
 
                       if (token != null) {
@@ -124,7 +124,8 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
                     }
                   },
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
                     child: Text('Save', style: TextStyle(fontSize: 16.0)),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -178,7 +179,7 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
       'linkedIn': _linkedInController.text.trim(),
     };
 
-    final Uri url = Uri.parse('http://localhost:8000/api/social_media');
+    final Uri url = Uri.parse('http://10.0.2.2:8000/api/social_media');
 
     final response = await http.post(
       url,

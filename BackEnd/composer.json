@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "google/apiclient": "^2.16",
         "defuse/php-encryption": "^2.4",
         "kreait/firebase-php": "^7.12",
         "laravel/framework": "^11.0",

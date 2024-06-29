@@ -70,7 +70,8 @@ class UserCardPage extends StatelessWidget {
   UserCardPage({required this.barcode});
 
   Future<void> downloadPdf(BuildContext context) async {
-    final url = 'http://localhost:8000/download_pdf/$barcode'; // Perbaiki penulisan 'localhost'
+    final url =
+        'http://10.0.2.2:8000/download_pdf/$barcode'; // Perbaiki penulisan '10.0.2.2'
     try {
       final response = await http.get(Uri.parse(url));
 

@@ -19,6 +19,8 @@ class User extends Model
         'phone',
         'password',
         'barcode',
+        'fcm_token',
+        'quickfy_fcm_token',
     ];
 
     protected $hidden = [

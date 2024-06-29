@@ -25,7 +25,7 @@ class _SettingPageState extends State<SettingPage> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/user'),
+        Uri.parse('http://10.0.2.2:8000/api/user'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -59,10 +59,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
           TextButton(
             onPressed: () async {
-              // Clear token and navigate to HomeScreen
-              final SharedPreferences prefs =
-                  await SharedPreferences.getInstance();
-              prefs.remove('token');
+              await _logout();
               Navigator.of(context).pushNamedAndRemoveUntil(
                 '/',
                 (route) => false,
@@ -73,6 +70,43 @@ class _SettingPageState extends State<SettingPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null) {
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/logout'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        prefs.remove('token');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logged out successfully'),
+          ),
+        );
+      } else {
+        print('Failed to logout: ${response.statusCode}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to logout'),
+          ),
+        );
+      }
+    } else {
+      print('Token not found');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Token not found'),
+        ),
+      );
+    }
   }
 
   @override
@@ -192,7 +226,46 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   void _updateProfile() async {
-    // Your profile update logic here
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token != null) {
+      final response = await http.put(
+        Uri.parse('http://10.0.2.2:8000/api/profile'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'name': _nameController.text,
+          'email': _emailController.text,
+          'phone': _phoneController.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Profile updated successfully'),
+          ),
+        );
+      } else {
+        print('Failed to update profile: ${response.statusCode}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update profile'),
+          ),
+        );
+      }
+    } else {
+      print('Token not found');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Token not found'),
+        ),
+      );
+    }
   }
 }
 

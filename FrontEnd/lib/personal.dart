@@ -16,10 +16,13 @@ class _FormInputPageState extends State<FormInputPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _selectedNationalityController = TextEditingController();
+  final TextEditingController _selectedNationalityController =
+      TextEditingController();
   final TextEditingController _selectedCityController = TextEditingController();
-  final TextEditingController _selectedGenderController = TextEditingController();
-  final TextEditingController _selectedReligionController = TextEditingController();
+  final TextEditingController _selectedGenderController =
+      TextEditingController();
+  final TextEditingController _selectedReligionController =
+      TextEditingController();
 
   File? _selectedImage;
 
@@ -222,8 +225,8 @@ class _FormInputPageState extends State<FormInputPage> {
     'Niger',
     'Nigeria',
     'North Korea',
-    'North Macedonia (formerly Macedonia)'
-    , 'Norway',
+    'North Macedonia (formerly Macedonia)',
+    'Norway',
     'Oman',
     'Pakistan',
     'Palau',
@@ -312,7 +315,7 @@ class _FormInputPageState extends State<FormInputPage> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/personals'),
+        Uri.parse('http://10.0.2.2:8000/api/personals'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -337,7 +340,8 @@ class _FormInputPageState extends State<FormInputPage> {
   }
 
   Future<void> _pickImage() async {
-    final pickedImage = await ImagePicker().getImage(source: ImageSource.gallery);
+    final pickedImage =
+        await ImagePicker().getImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       setState(() {
         _selectedImage = File(pickedImage.path);
@@ -356,37 +360,69 @@ class _FormInputPageState extends State<FormInputPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _buildTextFormField(controller: _nikController, label: 'NIK', validator: _validateNIK),
+              _buildTextFormField(
+                  controller: _nikController,
+                  label: 'NIK',
+                  validator: _validateNIK),
               SizedBox(height: 16.0),
-              _buildTextFormField(controller: _firstNameController, label: 'First Name', validator: (value) => _validateInput(value, 'First Name')),
+              _buildTextFormField(
+                  controller: _firstNameController,
+                  label: 'First Name',
+                  validator: (value) => _validateInput(value, 'First Name')),
               SizedBox(height: 16.0),
-              _buildTextFormField(controller: _lastNameController, label: 'Last Name', validator: (value) => _validateInput(value, 'Last Name')),
+              _buildTextFormField(
+                  controller: _lastNameController,
+                  label: 'Last Name',
+                  validator: (value) => _validateInput(value, 'Last Name')),
               SizedBox(height: 16.0),
-              _buildTextFormField(controller: _addressController, label: 'Address', validator: (value) => _validateInput(value, 'Address')),
+              _buildTextFormField(
+                  controller: _addressController,
+                  label: 'Address',
+                  validator: (value) => _validateInput(value, 'Address')),
               SizedBox(height: 16.0),
-              _buildDropdownButtonFormField(value: _selectedCity, items: _cities, label: 'City', onChanged: (String? value) {
-                setState(() {
-                  _selectedCity = value ?? '';
-                });
-              }, validator: (value) => _validateInput(value, 'City')),
+              _buildDropdownButtonFormField(
+                  value: _selectedCity,
+                  items: _cities,
+                  label: 'City',
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedCity = value ?? '';
+                    });
+                  },
+                  validator: (value) => _validateInput(value, 'City')),
               SizedBox(height: 16.0),
-              _buildDropdownButtonFormField(value: _selectedNationality, items: _nationalities, label: 'Nationality', onChanged: (String? value) {
-                setState(() {
-                  _selectedNationality = value ?? '';
-                });
-              }, validator: (value) => _validateInput(value, 'Nationality')),
+              _buildDropdownButtonFormField(
+                  value: _selectedNationality,
+                  items: _nationalities,
+                  label: 'Nationality',
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedNationality = value ?? '';
+                    });
+                  },
+                  validator: (value) => _validateInput(value, 'Nationality')),
               SizedBox(height: 16.0),
-              _buildDropdownButtonFormField(value: _selectedGender, items: _genders, label: 'Gender', onChanged: (String? value) {
-                setState(() {
-                  _selectedGender = value ?? '';
-                });
-              }, validator: (value) => _validateInput(value, 'Gender')),
+              _buildDropdownButtonFormField(
+                  value: _selectedGender,
+                  items: _genders,
+                  label: 'Gender',
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedGender = value ?? '';
+                    });
+                  },
+                  validator: (value) => _validateInput(value, 'Gender')),
               SizedBox(height: 16.0),
-              _buildDropdownButtonFormField(value: _selectedReligion, items: _religions, label: 'Religion', onChanged: (String? value) {
-                setState(() {
-                  _selectedReligion = value ?? '';
-                });
-              }, validator: (value) => _validateInput(value, 'Religion')),
+              _buildDropdownButtonFormField(
+                  value: _selectedReligion,
+                  items: _religions,
+                  label: 'Religion',
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedReligion = value ?? '';
+                    });
+                  },
+                  validator: (value) => _validateInput(value, 'Religion')),
               SizedBox(height: 16.0),
               _buildImage(),
               SizedBox(height: 16.0),
@@ -396,18 +432,25 @@ class _FormInputPageState extends State<FormInputPage> {
                 child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      final SharedPreferences prefs = await SharedPreferences.getInstance();
+                      final SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
                       final String? token = prefs.getString('token');
 
                       if (token != null) {
                         _submitForm(token);
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Token not found')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Token not found')));
                       }
                     }
                   },
-                  child: Padding(padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0), child: Text('Save', style: TextStyle(fontSize: 16.0))),
-                  style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0))),
+                  child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 14.0, horizontal: 24.0),
+                      child: Text('Save', style: TextStyle(fontSize: 16.0))),
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0))),
                 ),
               ),
             ],
@@ -417,7 +460,10 @@ class _FormInputPageState extends State<FormInputPage> {
     );
   }
 
-  Widget _buildTextFormField({required TextEditingController controller, required String label, required String? Function(String?) validator}) {
+  Widget _buildTextFormField(
+      {required TextEditingController controller,
+      required String label,
+      required String? Function(String?) validator}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -429,7 +475,12 @@ class _FormInputPageState extends State<FormInputPage> {
     );
   }
 
-  Widget _buildDropdownButtonFormField({required String value, required List<String> items, required String label, required ValueChanged<String?> onChanged, required String? Function(String?) validator}) {
+  Widget _buildDropdownButtonFormField(
+      {required String value,
+      required List<String> items,
+      required String label,
+      required ValueChanged<String?> onChanged,
+      required String? Function(String?) validator}) {
     return DropdownButtonFormField(
       value: value.isNotEmpty ? value : null,
       items: items.map((String item) {
@@ -460,7 +511,7 @@ class _FormInputPageState extends State<FormInputPage> {
     try {
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://localhost:8000/api/personals'),
+        Uri.parse('http://10.0.2.2:8000/api/personals'),
       );
 
       request.headers['Authorization'] = 'Bearer $token';
@@ -474,18 +525,22 @@ class _FormInputPageState extends State<FormInputPage> {
       request.fields['religion'] = _selectedReligion;
 
       if (_selectedImage != null) {
-        request.files.add(await http.MultipartFile.fromPath('photo', _selectedImage!.path));
+        request.files.add(
+            await http.MultipartFile.fromPath('photo', _selectedImage!.path));
       }
 
       final response = await request.send();
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Data saved successfully')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Data saved successfully')));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save data')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to save data')));
       }
     } catch (e) {
       print('Error submitting form: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('An error occurred while saving data')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred while saving data')));
     }
   }
 

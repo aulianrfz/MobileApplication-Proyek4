@@ -90,7 +90,7 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/works'),
+        Uri.parse('http://10.0.2.2:8000/api/works'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -192,7 +192,7 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
+                          await SharedPreferences.getInstance();
                       final String? token = prefs.getString('token');
 
                       if (token != null) {
@@ -205,7 +205,8 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
                     }
                   },
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
                     child: Text('Save', style: TextStyle(fontSize: 16.0)),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -279,25 +280,26 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
     };
 
     final Uri url = _workId != null
-        ? Uri.parse('http://localhost:8000/api/works/$_workId')
-        : Uri.parse('http://localhost:8000/api/works');
+        ? Uri.parse('http://10.0.2.2:8000/api/works/$_workId')
+        : Uri.parse('http://10.0.2.2:8000/api/works');
 
     final response = await (_workId != null
         ? http.put(
-      url,headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    },
-      body: json.encode(workData),
-    )
+            url,
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: json.encode(workData),
+          )
         : http.post(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: json.encode(workData),
-    ));
+            url,
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: json.encode(workData),
+          ));
 
     if ((response.statusCode == 200 && _workId != null) ||
         (response.statusCode == 201 && _workId == null)) {
@@ -334,6 +336,7 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
     }
     return null;
   }
+
   String? _validateStartYear(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter the Start Year';
@@ -365,7 +368,6 @@ class _WorkFormInputPageState extends State<WorkFormInputPage> {
     }
     return null;
   }
-
 }
 
 void main() {

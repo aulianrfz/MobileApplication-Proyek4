@@ -9,17 +9,31 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Kreait\Firebase\Factory;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
-     /**
+    /**
      * Handle a login request to the application.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
 
-     public function register(Request $request)
+    public function __construct()
+    {
+        try {
+            $firebase = (new Factory)->withServiceAccount(config('firebase.credentials.file'));
+            $this->messaging = $firebase->createMessaging();
+            Log::info('Firebase initialized successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error initializing Firebase: ' . $e->getMessage());
+        }
+    }
+
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -38,7 +52,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'password' => bcrypt($hashedPassword), // Enkripsi kata sandi
+            'password' => $hashedPassword, // Enkripsi kata sandi
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -49,31 +63,41 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Validasi request menggunakan Validator
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string',
+            'quickfy_fcm_token' => 'required|string',
         ]);
 
-        // Jika validasi gagal, kembalikan respons dengan status 422 (Unprocessable Entity)
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        // Cari user berdasarkan email
         $user = User::where('email', $request->email)->first();
 
-        // Jika user tidak ditemukan atau password tidak cocok, kembalikan respons Unauthorized (status 401)
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // Generate token untuk user menggunakan Sanctum
+        $hashedPassword = hash('sha256', $request->password);
+
+        Log::info('Password in database: ' . $user->password);
+        Log::info('Password entered: ' . $request->password);
+        Log::info('Hashed password: ' . $hashedPassword);
+
+        if ($hashedPassword !== $user->password) {
+            Log::info('Invalid password for user ID: ' . $user->id);
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // Kembalikan respons sukses bersama dengan token dan id user
+        $user->quickfy_fcm_token = $request->quickfy_fcm_token;
+        $user->save();
+
         return response()->json(['message' => 'Login successful', 'token' => $token, 'user_id' => $user->id], 200);
     }
+
 
     public function logout(Request $request)
     {
@@ -140,20 +164,18 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Cari user berdasarkan email
         $user = User::where('email', $request->email)->first();
 
-        // Jika user tidak ditemukan, kembalikan respons email tidak ditemukan
         if (!$user) {
             return response()->json(['message' => 'Email not found.'], 404);
         }
 
-        // Reset password
-        $user->password = bcrypt(hash('sha256', $request->password)); // Enkripsi password dengan kriptografi
+        $user->password = hash('sha256', $request->password); // Menggunakan SHA-256
         $user->save();
 
         return response()->json(['message' => 'Password reset successfully.'], 200);
     }
+
 
 
 

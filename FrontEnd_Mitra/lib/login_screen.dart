@@ -1,12 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'shared_prefences.dart';
+import 'package:crypto/crypto.dart';
+import 'shared_prefences.dart'; // Pastikan nama file ini benar
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'firebase_options.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.data['status'] == 'integration_response') {
+        _handleIntegrationResponse(message.data['response']);
+      }
+    });
+
+    var initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  void _handleIntegrationResponse(String response) {
+    if (response == 'yes') {
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    } else {
+      // Handle "no" response if needed
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,20 +67,18 @@ class LoginScreen extends StatelessWidget {
                     ),
                     children: <TextSpan>[
                       TextSpan(
-                        text: 'Quick', // Teks pertama
+                        text: 'Quick',
                       ),
                       TextSpan(
-                        text: 'Fy', // Teks kedua
+                        text: 'Fy',
                         style: TextStyle(
-                          color: Color.fromARGB(255, 204, 31,
-                              31), // Ubah warna teks 'Fy' menjadi hijau
+                          color: Color.fromARGB(255, 204, 31, 31),
                         ),
                       ),
                       TextSpan(
-                        text: '!', // Teks kedua
+                        text: '!',
                         style: TextStyle(
-                          color: Color.fromARGB(255, 161, 239,
-                              255), // Ubah warna teks 'Fy' menjadi hijau
+                          color: Color.fromARGB(255, 161, 239, 255),
                         ),
                       ),
                     ],
@@ -51,7 +86,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  'Q U I C K   I D E N T I F Y', // Teks kedua
+                  'Q U I C K   I D E N T I F Y',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 12,
@@ -59,10 +94,17 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 40),
-                buildTextField('Email',
-                    isPassword: false, controller: _emailController),
+                CustomTextField(
+                  label: 'Email',
+                  isPassword: false,
+                  controller: _emailController,
+                ),
                 SizedBox(height: 20),
-                buildPasswordField('Password', controller: _passwordController),
+                CustomTextField(
+                  label: 'Password',
+                  isPassword: true,
+                  controller: _passwordController,
+                ),
                 SizedBox(height: 25),
                 ElevatedButton(
                   onPressed: () {
@@ -78,7 +120,7 @@ class LoginScreen extends StatelessWidget {
                         EdgeInsets.symmetric(vertical: 15)),
                   ),
                   child: Text(
-                    'login',
+                    'Login',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 15,
@@ -89,7 +131,7 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/'); // Navigate to home
+                    Navigator.pushNamed(context, '/');
                   },
                   child: Text(
                     'Cancel',
@@ -107,127 +149,56 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget buildTextField(String label,
-      {bool isPassword = false, required TextEditingController controller}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 16),
-        ),
-        SizedBox(height: 10),
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(10),
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: TextFormField(
-            controller: controller,
-            obscureText: isPassword,
-            validator: (value) {
-              if (label == 'Email' && !value!.contains('@')) {
-                return 'Please enter a valid email';
-              }
-              return null;
-            },
-            decoration: InputDecoration(
-              border: InputBorder.none,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget buildPasswordField(String label,
-      {required TextEditingController controller}) {
-    bool _obscureText = true;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 16),
-        ),
-        SizedBox(height: 10),
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(10),
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          child: TextFormField(
-            controller: controller,
-            obscureText: _obscureText,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  _obscureText = !_obscureText;
-                },
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   void _login(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final String email = _emailController.text.trim();
       final String password = _passwordController.text.trim();
 
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken == null) {
+        print('Failed to obtain FCM token.');
+        return;
+      }
+      print('Token: $fcmToken');
+
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8000/api/login'),
-          body: {
-            'email': email,
-            'password': password,
+          Uri.parse('http://10.0.2.2:8000/api/login_quickfy'),
+          headers: {
+            'Content-Type': 'application/json',
           },
+          body: jsonEncode({
+            'email': email,
+            'password': password, // Kirimkan password mentah
+            'fcm_token': fcmToken,
+          }),
         );
 
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
         if (response.statusCode == 200) {
-          // Login berhasil
           final responseData = json.decode(response.body);
           final token = responseData['token'];
-          final userId =
-              responseData['user_id']; // Dapatkan userId dari respons API
+          final userId = responseData['user_id'];
 
-          // Simpan token dan userId ke dalam shared preferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
+          await prefs.setInt('userId', userId);
+
           await SharedPreferencesManager.saveUserData(token, userId);
 
-          // Kirim data riwayat ke aplikasi integrasi
-          final historyResponse = await http.post(
-            Uri.parse('http://localhost:8000/api/integration-history'),
-            headers: {
-              'Authorization':
-                  'Bearer $token', // Sertakan token jika diperlukan
-            },
-            body: {
-              'app_name': 'QuickFy',
-              'generated_at': DateTime.now().toIso8601String(),
-              'status': 'Login successful',
-              'user_id': userId.toString(),
-            },
-          );
-
-          Navigator.pushReplacementNamed(context, '/');
+          // Navigate to the waiting screen
+          if (context.mounted) {
+            Navigator.pushReplacementNamed(context, '/waiting_screen');
+          }
         } else {
-          // Gagal login
+          print('Login failed: ${response.statusCode}');
+          print('Response body: ${response.body}');
           _showErrorDialog(context, 'Login Failed', 'Gagal');
         }
       } catch (error) {
-        // Tangani kesalahan jaringan atau kesalahan lainnya
+        print('Login: $error');
         _showErrorDialog(context, 'Error', 'Kesalahan lain');
       }
     }
@@ -250,6 +221,58 @@ class LoginScreen extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class CustomTextField extends StatefulWidget {
+  final String label;
+  final bool isPassword;
+  final TextEditingController controller;
+
+  const CustomTextField({
+    required this.label,
+    required this.isPassword,
+    required this.controller,
+  });
+
+  @override
+  _CustomTextFieldState createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.label,
+          style: TextStyle(fontSize: 16),
+        ),
+        SizedBox(height: 10),
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: TextFormField(
+            controller: widget.controller,
+            obscureText: widget.isPassword,
+            validator: (value) {
+              if (widget.label == 'Email' && !value!.contains('@')) {
+                return 'Please enter a valid email';
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

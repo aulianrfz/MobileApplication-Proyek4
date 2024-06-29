@@ -14,6 +14,11 @@ class SharedPreferencesManager {
     return {'token': token, 'user_id': userId};
   }
 
+  static Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
   static Future<void> clearUserData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');

@@ -16,7 +16,7 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
   final TextEditingController _selectedCityController = TextEditingController();
   final TextEditingController _nationalityController = TextEditingController();
   final TextEditingController _selectedGenderController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController _religionController = TextEditingController();
 
   List<String> _cities = [
@@ -218,8 +218,8 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
     'Niger',
     'Nigeria',
     'North Korea',
-    'North Macedonia (formerly Macedonia)'
-    , 'Norway',
+    'North Macedonia (formerly Macedonia)',
+    'Norway',
     'Oman',
     'Pakistan',
     'Palau',
@@ -294,7 +294,6 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
   String _selectedReligion = '';
   String _selectedNationality = '';
 
-
   @override
   void initState() {
     super.initState();
@@ -308,7 +307,7 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/mothers'),
+        Uri.parse('http://10.0.2.2:8000/api/mothers'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -486,7 +485,7 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
+                        await SharedPreferences.getInstance();
                     final String? token = prefs.getString('token');
 
                     if (token != null) {
@@ -511,7 +510,7 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
   void _submitForm(String token) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.get(
-      Uri.parse('http://localhost:8000/api/mothers'),
+      Uri.parse('http://10.0.2.2:8000/api/mothers'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -520,7 +519,7 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
     if (response.statusCode == 200) {
       // If mother data already exists, update it
       final response = await http.put(
-        Uri.parse('http://localhost:8000/api/mothers'),
+        Uri.parse('http://10.0.2.2:8000/api/mothers'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -550,7 +549,7 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
     } else if (response.statusCode == 404) {
       // If mother data does not exist, create it
       final response = await http.post(
-        Uri.parse('http://localhost:8000/api/mothers'),
+        Uri.parse('http://10.0.2.2:8000/api/mothers'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

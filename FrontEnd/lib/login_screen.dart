@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'forgot_password.dart'; // Import ForgotPasswordScreen
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class LoginScreen extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -82,7 +83,7 @@ class LoginScreen extends StatelessWidget {
                       Color(0xFF15144E),
                     ),
                     minimumSize:
-                    MaterialStateProperty.all<Size>(Size(321, 51.91)),
+                        MaterialStateProperty.all<Size>(Size(321, 51.91)),
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                       EdgeInsets.symmetric(vertical: 15),
                     ),
@@ -101,7 +102,8 @@ class LoginScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => ForgotPasswordScreen()),
                     );
                   },
                   child: Text('Forgot Password?'),
@@ -210,17 +212,24 @@ class LoginScreen extends StatelessWidget {
       final String email = _emailController.text.trim();
       final String password = _passwordController.text.trim();
 
-      // Hashing password using SHA-256
-      final passwordBytes = utf8.encode(password);
-      final hashedPassword = sha256.convert(passwordBytes).toString();
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken == null) {
+        print('Failed to obtain FCM token.');
+        return;
+      }
 
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8000/api/login'), // Adjust with your local server address
-          body: {
-            'email': email,
-            'password': hashedPassword, // Send hashed password
+          Uri.parse(
+              'http://10.0.2.2:8000/api/login'), // Adjust with your local server address
+          headers: {
+            'Content-Type': 'application/json',
           },
+          body: jsonEncode({
+            'email': email,
+            'password': password, // Mengirimkan password yang sudah di-hash
+            'quickfy_fcm_token': fcmToken,
+          }),
         );
 
         if (response.statusCode == 200) {

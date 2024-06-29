@@ -19,6 +19,8 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('phone')->nullable()->unique();
             $table->string('password');
+            $table->string('fcm_token')->nullable();
+            $table->string('quickfy_fcm_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

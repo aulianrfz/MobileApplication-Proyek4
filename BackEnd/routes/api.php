@@ -15,13 +15,14 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SocialMediaController;
-
+use App\Http\Controllers\IntegrationController;
 
 // Auth routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('/password_request', [AuthController::class, 'passwordResetRequest']);
 Route::post('/reset_password', [AuthController::class, 'resetPassword']);
+Route::post('login_quickfy', [IntegrationController::class, 'login']);
 
 // Group routes that require authentication
 Route::middleware('auth:sanctum')->group(function () {
@@ -73,12 +74,18 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Logout route
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications', [NotificationController::class, 'store']);
+    Route::get('/notifications/{id}', [NotificationController::class, 'show']);
+    Route::post('/notification_response', [IntegrationController::class, 'handleNotificationResponse']);
+    Route::post('/integration/response', [IntegrationController::class, 'handleIntegrationResponse']);
+    Route::get('/histories', [HistoryController::class, 'index']);
 });
 
-Route::post('/integration-history', [IntegrationHistoryController::class, 'store']);
-Route::get('/integration-history', [IntegrationHistoryController::class, 'index']);
+// Route::post('/integration-history', [IntegrationHistoryController::class, 'store']);
+// Route::get('/integration-history', [IntegrationHistoryController::class, 'index']);
 
-Route::post('/integration-history', [IntegrationHistoryController::class, 'store']);
-Route::get('/integration-history', [IntegrationHistoryController::class, 'index']);
-Route::get('/notifications', [NotificationController::class, 'index']);
-Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+// Route::post('/integration-history', [IntegrationHistoryController::class, 'store']);
+// Route::get('/integration-history', [IntegrationHistoryController::class, 'index']);
+// Route::get('/notifications', [NotificationController::class, 'index']);
+// Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);

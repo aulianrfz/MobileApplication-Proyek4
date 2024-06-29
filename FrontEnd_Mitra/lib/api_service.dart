@@ -10,7 +10,7 @@ class ApiService {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/personals'),
+        Uri.parse('http://10.0.2.2:8000/api/personals'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -35,7 +35,7 @@ class ApiService {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/fathers'),
+        Uri.parse('http://10.0.2.2:8000/api/fathers'),
         headers: {
           'Authorization': 'Bearer $token',
         },
