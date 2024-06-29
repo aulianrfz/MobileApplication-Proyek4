@@ -11,6 +11,8 @@ import 'package:singpass/ortu.dart';
 import 'package:singpass/mother.dart';
 import 'package:singpass/father.dart';
 import 'package:singpass/barcode.dart';
+import 'package:singpass/sosmed.dart';
+import 'package:singpass/forgot_password.dart';
 import 'package:singpass/notification.dart';
 //import 'package:singpass/user_card.dart';
 
@@ -31,16 +33,18 @@ class MyApp extends StatelessWidget {
         '/': (context) => HomeScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
+        '/forgot_password': (context) => ForgotPasswordScreen(),
         '/homepage': (context) => Homepage(),
         '/personal': (context) => FormInputPage(),
-        '/setting': (context) => SettingPage(),
-        '/history': (context) => HistoryPage(),
+        //'/setting': (context) => SettingPage(),
+        //'/history': (context) => HistoryPage(),
         '/education': (context) => EducationFormInputPage(),
         '/work': (context) => WorkFormInputPage(),
         '/ortu': (context) => FormOrtu(),
         '/mother': (context) => MotherFormInputPage(),
         '/father': (context) => FatherFormInputPage(),
         '/barcode': (context) => BarcodePage(),
+        '/sosmed': (context) => SocialMediaFormInputPage(),
         '/notifications': (context) => NotificationsPage(),
         //'/card': (context) => UserCardPage(),
       },

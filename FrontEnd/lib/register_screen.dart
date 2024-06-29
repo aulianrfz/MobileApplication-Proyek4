@@ -1,56 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class RegisterScreen extends StatefulWidget {
-  @override
-  _RegisterScreenState createState() => _RegisterScreenState();
-}
+class RegisterScreen extends StatelessWidget {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  bool _obscureText = true;
-  bool _confirmObscureText = true;
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneNumberController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-
-  void _togglePasswordVisibility() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
-
-  void _toggleConfirmPasswordVisibility() {
-    setState(() {
-      _confirmObscureText = !_confirmObscureText;
-    });
-  }
-
-  Future<void> _register() async {
+  void _register(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      final response = await http.post(
-        Uri.parse('http://localhost:8000/api/register'),
-        body: {
-          'name': _nameController.text.trim(),
-          'email': _emailController.text.trim(),
-          'phone': _phoneNumberController.text.trim(),
-          'password': _passwordController.text.trim(),
-        },
-      );
+      final String name = _nameController.text.trim();
+      final String email = _emailController.text.trim();
+      final String phone = _phoneNumberController.text.trim();
+      final String password = _passwordController.text.trim();
 
-      if (response.statusCode == 201) {
-        // Registration successful, navigate to login screen
-        Navigator.pushReplacementNamed(context, '/login');
-      } else {
-        // Registration failed, display error message
+      try {
+        final response = await http.post(
+          Uri.parse('http://localhost:8000/api/register'), // Adjust with your Laravel server address
+          body: {
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'password': password, // Send plain password to backend
+          },
+        );
+
+        if (response.statusCode == 201) {
+          // Registration successful, navigate to login screen
+          Navigator.pushReplacementNamed(context, '/login');
+        } else {
+          // Registration failed, display error message
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Registration Failed'),
+                content: Text('An error occurred during registration.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } catch (error) {
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Registration Failed'),
-              content: Text('An error occurred during registration.'),
+              title: Text('Error'),
+              content: Text('An unexpected error occurred: $error'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -71,10 +78,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'register',
+          'Register',
           style: TextStyle(
             fontFamily: 'Poppins',
-            fontSize: 20, // Ubah ukuran font sesuai kebutuhan
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Color(0xFF15144E),
           ),
@@ -103,15 +110,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextSpan(
                       text: 'Fy', // Teks kedua
                       style: TextStyle(
-                        color: Color.fromARGB(255, 204, 31,
-                            31), // Ubah warna teks 'Fy' menjadi hijau
+                        color: Color.fromARGB(255, 204, 31, 31),
                       ),
                     ),
                     TextSpan(
                       text: '!', // Teks kedua
                       style: TextStyle(
-                        color: Color.fromARGB(255, 161, 239,
-                            255), // Ubah warna teks 'Fy' menjadi hijau
+                        color: Color.fromARGB(255, 161, 239, 255),
                       ),
                     ),
                   ],
@@ -124,7 +129,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   labelText: 'Full Name',
                 ),
                 validator: (value) {
-                  if (value!.isEmpty) {
+                  if (value?.isEmpty ?? true) {
                     return 'Please enter your full name';
                   }
                   return null;
@@ -138,7 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   labelText: 'Email Address',
                 ),
                 validator: (value) {
-                  if (value!.isEmpty || !value.contains('@')) {
+                  if (value?.isEmpty ?? true || !(value?.contains('@') ?? false)) {
                     return 'Please enter a valid email address';
                   }
                   return null;
@@ -152,7 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   labelText: 'Phone Number',
                 ),
                 validator: (value) {
-                  if (value!.isEmpty || value.length < 10) {
+                  if (value?.isEmpty ?? true || value!.length < 10) {
                     return 'Please enter a valid phone number';
                   }
                   return null;
@@ -161,18 +166,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(height: 20),
               TextFormField(
                 controller: _passwordController,
-                obscureText: _obscureText,
+                obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    onPressed: _togglePasswordVisibility,
-                  ),
                 ),
                 validator: (value) {
-                  if (value!.isEmpty || value.length < 8) {
+                  if (value?.isEmpty ?? true || value!.length < 8) {
                     return 'Password must be at least 8 characters long';
                   }
                   return null;
@@ -181,20 +180,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(height: 20),
               TextFormField(
                 controller: _confirmPasswordController,
-                obscureText: _confirmObscureText,
+                obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Confirm Password',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _confirmObscureText
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: _toggleConfirmPasswordVisibility,
-                  ),
                 ),
                 validator: (value) {
-                  if (value!.isEmpty || value != _passwordController.text) {
+                  if (value?.isEmpty ?? true || value != _passwordController.text) {
                     return 'Passwords do not match';
                   }
                   return null;
@@ -202,13 +193,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _register, // Fungsi onPressed untuk register
+                onPressed: () => _register(context),
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(
                     Color(0xFF15144E),
                   ),
                   minimumSize:
-                      MaterialStateProperty.all<Size>(Size(321, 51.91)),
+                  MaterialStateProperty.all<Size>(Size(321, 51.91)),
                   padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                       EdgeInsets.symmetric(vertical: 15)),
                 ),

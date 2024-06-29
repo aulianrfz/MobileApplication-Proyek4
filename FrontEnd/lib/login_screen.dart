@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'shared_prefences.dart';
+import 'forgot_password.dart'; // Import ForgotPasswordScreen
 
 class LoginScreen extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -81,7 +82,7 @@ class LoginScreen extends StatelessWidget {
                       Color(0xFF15144E),
                     ),
                     minimumSize:
-                        MaterialStateProperty.all<Size>(Size(321, 51.91)),
+                    MaterialStateProperty.all<Size>(Size(321, 51.91)),
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                       EdgeInsets.symmetric(vertical: 15),
                     ),
@@ -95,12 +96,22 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(height: 10), // Add some space
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                    );
+                  },
+                  child: Text('Forgot Password?'),
+                ),
               ],
             ),
           ),
         ),
       ),
-    );
+    ); // <-- Ini adalah penutup kurung kurawal yang seharusnya ada
   }
 
   Widget buildTextField(String label,
@@ -199,12 +210,16 @@ class LoginScreen extends StatelessWidget {
       final String email = _emailController.text.trim();
       final String password = _passwordController.text.trim();
 
+      // Hashing password using SHA-256
+      final passwordBytes = utf8.encode(password);
+      final hashedPassword = sha256.convert(passwordBytes).toString();
+
       try {
         final response = await http.post(
-          Uri.parse('http://localhost:8000/api/login'),
+          Uri.parse('http://localhost:8000/api/login'), // Adjust with your local server address
           body: {
             'email': email,
-            'password': password,
+            'password': hashedPassword, // Send hashed password
           },
         );
 
@@ -213,7 +228,10 @@ class LoginScreen extends StatelessWidget {
           final token = responseData['token'];
           final userId = responseData['user_id'];
 
-          await SharedPreferencesManager.saveUserData(token, userId);
+          // Save token and userId using SharedPreferences (replace with your actual implementation)
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
+          await prefs.setInt('userId', userId);
 
           Navigator.pushReplacementNamed(context, '/homepage');
         } else {
@@ -241,7 +259,7 @@ class LoginScreen extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text('An unexpected error occurred'),
+              content: Text('An unexpected error occurred: $error'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -256,10 +274,4 @@ class LoginScreen extends StatelessWidget {
       }
     }
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: LoginScreen(),
-  ));
-}
+} // <-- Ini adalah penutup kurung kurawal untuk class LoginScreen

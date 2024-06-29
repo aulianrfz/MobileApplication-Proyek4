@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class FormInputPage extends StatefulWidget {
   @override
@@ -14,13 +16,12 @@ class _FormInputPageState extends State<FormInputPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _selectedNationalityController =
-      TextEditingController();
+  final TextEditingController _selectedNationalityController = TextEditingController();
   final TextEditingController _selectedCityController = TextEditingController();
-  final TextEditingController _selectedGenderController =
-      TextEditingController();
-  final TextEditingController _selectedReligionController =
-      TextEditingController();
+  final TextEditingController _selectedGenderController = TextEditingController();
+  final TextEditingController _selectedReligionController = TextEditingController();
+
+  File? _selectedImage;
 
   List<String> _cities = [
     'New York',
@@ -93,7 +94,7 @@ class _FormInputPageState extends State<FormInputPage> {
     'Judaism',
   ];
 
-  List<String> _nationalitys = [
+  List<String> _nationalities = [
     'Afghanistan',
     'Albania',
     'Algeria',
@@ -221,8 +222,8 @@ class _FormInputPageState extends State<FormInputPage> {
     'Niger',
     'Nigeria',
     'North Korea',
-    'North Macedonia (formerly Macedonia)',
-    'Norway',
+    'North Macedonia (formerly Macedonia)'
+    , 'Norway',
     'Oman',
     'Pakistan',
     'Palau',
@@ -297,6 +298,8 @@ class _FormInputPageState extends State<FormInputPage> {
   String _selectedReligion = '';
   String _selectedNationality = '';
 
+  var responseData;
+
   @override
   void initState() {
     super.initState();
@@ -310,13 +313,11 @@ class _FormInputPageState extends State<FormInputPage> {
     if (token != null) {
       final response = await http.get(
         Uri.parse('http://localhost:8000/api/personals'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body)['data'];
+        responseData = json.decode(response.body)['data'];
         setState(() {
           _nikController.text = responseData['nik'];
           _firstNameController.text = responseData['first_name'];
@@ -328,21 +329,26 @@ class _FormInputPageState extends State<FormInputPage> {
           _selectedReligion = responseData['religion'];
         });
       } else {
-        // Handle if failed to fetch data from backend
         print('Failed to fetch data: ${response.statusCode}');
       }
     } else {
-      // Handle if token not found
       print('Token not found');
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final pickedImage = await ImagePicker().getImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      setState(() {
+        _selectedImage = File(pickedImage.path);
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Personal Information'),
-      ),
+      appBar: AppBar(title: Text('Personal Information')),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
         child: Form(
@@ -350,106 +356,58 @@ class _FormInputPageState extends State<FormInputPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _buildTextFormField(
-                controller: _nikController,
-                label: 'NIK',
-                validator: _validateNIK,
-              ),
+              _buildTextFormField(controller: _nikController, label: 'NIK', validator: _validateNIK),
               SizedBox(height: 16.0),
-              _buildTextFormField(
-                controller: _firstNameController,
-                label: 'First Name',
-                validator: (value) => _validateInput(value, 'First Name'),
-              ),
+              _buildTextFormField(controller: _firstNameController, label: 'First Name', validator: (value) => _validateInput(value, 'First Name')),
               SizedBox(height: 16.0),
-              _buildTextFormField(
-                controller: _lastNameController,
-                label: 'Last Name',
-                validator: (value) => _validateInput(value, 'Last Name'),
-              ),
+              _buildTextFormField(controller: _lastNameController, label: 'Last Name', validator: (value) => _validateInput(value, 'Last Name')),
               SizedBox(height: 16.0),
-              _buildTextFormField(
-                controller: _addressController,
-                label: 'Address',
-                validator: (value) => _validateInput(value, 'Address'),
-              ),
+              _buildTextFormField(controller: _addressController, label: 'Address', validator: (value) => _validateInput(value, 'Address')),
               SizedBox(height: 16.0),
-              _buildDropdownButtonFormField(
-                value: _selectedCity,
-                items: _cities,
-                label: 'City',
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedCity = value ?? '';
-                  });
-                },
-                validator: (value) => _validateInput(value, 'City'),
-              ),
+              _buildDropdownButtonFormField(value: _selectedCity, items: _cities, label: 'City', onChanged: (String? value) {
+                setState(() {
+                  _selectedCity = value ?? '';
+                });
+              }, validator: (value) => _validateInput(value, 'City')),
               SizedBox(height: 16.0),
-              _buildDropdownButtonFormField(
-                value: _selectedNationality,
-                items: _nationalitys,
-                label: 'Nationality',
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedNationality = value ?? '';
-                  });
-                },
-                validator: (value) => _validateInput(value, 'Nationality'),
-              ),
+              _buildDropdownButtonFormField(value: _selectedNationality, items: _nationalities, label: 'Nationality', onChanged: (String? value) {
+                setState(() {
+                  _selectedNationality = value ?? '';
+                });
+              }, validator: (value) => _validateInput(value, 'Nationality')),
               SizedBox(height: 16.0),
-              _buildDropdownButtonFormField(
-                value: _selectedGender,
-                items: _genders,
-                label: 'Gender',
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedGender = value ?? '';
-                  });
-                },
-                validator: (value) => _validateInput(value, 'Gender'),
-              ),
+              _buildDropdownButtonFormField(value: _selectedGender, items: _genders, label: 'Gender', onChanged: (String? value) {
+                setState(() {
+                  _selectedGender = value ?? '';
+                });
+              }, validator: (value) => _validateInput(value, 'Gender')),
               SizedBox(height: 16.0),
-              _buildDropdownButtonFormField(
-                value: _selectedReligion,
-                items: _religions,
-                label: 'Religion',
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedReligion = value ?? '';
-                  });
-                },
-                validator: (value) => _validateInput(value, 'Religion'),
-              ),
+              _buildDropdownButtonFormField(value: _selectedReligion, items: _religions, label: 'Religion', onChanged: (String? value) {
+                setState(() {
+                  _selectedReligion = value ?? '';
+                });
+              }, validator: (value) => _validateInput(value, 'Religion')),
+              SizedBox(height: 16.0),
+              _buildImage(),
+              SizedBox(height: 16.0),
+              ElevatedButton(onPressed: _pickImage, child: Text('Pick Image')),
               SizedBox(height: 24.0),
               Center(
                 child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      final SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
+                      final SharedPreferences prefs = await SharedPreferences.getInstance();
                       final String? token = prefs.getString('token');
 
                       if (token != null) {
                         _submitForm(token);
                       } else {
-                        // Handle the error if token is not found
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Token not found')),
-                        );
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Token not found')));
                       }
                     }
                   },
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
-                    child: Text('Save', style: TextStyle(fontSize: 16.0)),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                  ),
+                  child: Padding(padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0), child: Text('Save', style: TextStyle(fontSize: 16.0))),
+                  style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0))),
                 ),
               ),
             ],
@@ -459,151 +417,91 @@ class _FormInputPageState extends State<FormInputPage> {
     );
   }
 
-  Widget _buildTextFormField({
-    required TextEditingController controller,
-    required String label,
-    required String? Function(String?) validator,
-  }) {
+  Widget _buildTextFormField({required TextEditingController controller, required String label, required String? Function(String?) validator}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
         contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
       ),
       validator: validator,
     );
   }
 
-  Widget _buildDropdownButtonFormField({
-    required String value,
-    required List<String> items,
-    required String label,
-    required ValueChanged<String?> onChanged,
-    required String? Function(String?) validator,
-  }) {
+  Widget _buildDropdownButtonFormField({required String value, required List<String> items, required String label, required ValueChanged<String?> onChanged, required String? Function(String?) validator}) {
     return DropdownButtonFormField(
       value: value.isNotEmpty ? value : null,
       items: items.map((String item) {
-        return DropdownMenuItem<String>(
-          value: item,
-          child: Text(item),
-        );
+        return DropdownMenuItem<String>(value: item, child: Text(item));
       }).toList(),
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
         contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
       ),
       validator: validator,
     );
   }
 
-  void _submitForm(String token) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(
-      Uri.parse('http://localhost:8000/api/personals'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      // If personal data already exists, update it
-      final response = await http.put(
-        Uri.parse('http://localhost:8000/api/personals'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'nik': _nikController.text,
-          'first_name': _firstNameController.text,
-          'last_name': _lastNameController.text,
-          'address': _addressController.text,
-          'city': _selectedCity,
-          'nationality': _selectedNationality,
-          'gender': _selectedGender,
-          'religion': _selectedReligion,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Data updated successfully')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update data')),
-        );
-        print('Failed to update data: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } else if (response.statusCode == 404) {
-      // If personal data does not exist, create it
-      final response = await http.post(
-        Uri.parse('http://localhost:8000/api/personals'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'nik': _nikController.text,
-          'first_name': _firstNameController.text,
-          'last_name': _lastNameController.text,
-          'address': _addressController.text,
-          'city': _selectedCity,
-          'nationality': _selectedNationality,
-          'gender': _selectedGender,
-          'religion': _selectedReligion,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Data saved successfully')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save data')),
-        );
-        print('Failed to save data: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
+  Widget _buildImage() {
+    if (_selectedImage != null) {
+      return Image.file(_selectedImage!);
+    } else if (responseData != null && responseData['photo'] != null) {
+      // Use the correct URL format to display the image
+      return Image.network(responseData['photo']);
     } else {
-      // Handle other errors
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch data')),
+      return Container();
+    }
+  }
+
+  void _submitForm(String token) async {
+    try {
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://localhost:8000/api/personals'),
       );
-      print('Failed to fetch data: ${response.statusCode}');
-      print('Response body: ${response.body}');
+
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['nik'] = _nikController.text;
+      request.fields['first_name'] = _firstNameController.text;
+      request.fields['last_name'] = _lastNameController.text;
+      request.fields['address'] = _addressController.text;
+      request.fields['city'] = _selectedCity;
+      request.fields['nationality'] = _selectedNationality;
+      request.fields['gender'] = _selectedGender;
+      request.fields['religion'] = _selectedReligion;
+
+      if (_selectedImage != null) {
+        request.files.add(await http.MultipartFile.fromPath('photo', _selectedImage!.path));
+      }
+
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Data saved successfully')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save data')));
+      }
+    } catch (e) {
+      print('Error submitting form: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('An error occurred while saving data')));
     }
   }
 
   String? _validateInput(String? value, String fieldName) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your $fieldName';
+      return 'Please enter $fieldName';
     }
     return null;
   }
 
   String? _validateNIK(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your NIK';
-    } else if (!RegExp(r'^\d{10,20}$').hasMatch(value)) {
-      return 'NIK must be a numeric value between 10 and 20 digits';
+      return 'Please enter NIK';
+    } else if (!RegExp(r'^\d+$').hasMatch(value)) {
+      return 'NIK must be numeric';
     }
     return null;
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: FormInputPage(),
-  ));
 }

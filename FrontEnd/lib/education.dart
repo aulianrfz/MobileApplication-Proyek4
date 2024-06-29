@@ -187,8 +187,7 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
                 child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      final SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
+                      final SharedPreferences prefs = await SharedPreferences.getInstance();
                       final String? token = prefs.getString('token');
 
                       if (token != null) {
@@ -201,8 +200,7 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
                     }
                   },
                   child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                    padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
                     child: Text('Save', style: TextStyle(fontSize: 16.0)),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -271,6 +269,7 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
     return null;
   }
 
+
   void _submitForm(String token) async {
     final String school = _schoolController.text;
     final String startYear = _startYearController.text;
@@ -309,23 +308,21 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
 
     final response = await (_educationId != null
         ? http.put(
-            url,
-            headers: {
-              'Authorization': 'Bearer $token',
-              'Content-Type': 'application/json',
-            },
-            body: json.encode(educationData),
-          )
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(educationData),
+    )
         : http.post(
-            url,
-            headers: {
-              'Authorization': 'Bearer $token',
-              'Content-Type': 'application/json',
-            },
-            body: json.encode({
-              'educations': [educationData]
-            }), // Wrap data in 'educations' array
-          ));
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({'educations': [educationData]}), // Wrap data in 'educations' array
+    ));
 
     if ((response.statusCode == 200 && _educationId != null) ||
         (response.statusCode == 201 && _educationId == null)) {
@@ -346,6 +343,7 @@ class _EducationFormInputPageState extends State<EducationFormInputPage> {
       print('Response body: ${response.body}');
     }
   }
+
 }
 
 void main() {
