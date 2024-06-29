@@ -56,4 +56,10 @@ class User extends Model
     {
         return $this->hasOne(Education::class);
     }
+
+    public function socialMedia()
+    {
+        return $this->hasOne(SocialMedia::class);
+    }
+
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SocialMediaController;
 
 
 // Auth routes
@@ -53,6 +54,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('educations', [EducationController::class, 'index']);
     Route::put('educations/{id}', [EducationController::class, 'update']);
     Route::delete('educations/{id}', [EducationController::class, 'destroy']);
+
+    // sosmed
+    Route::get('/social_media', [SocialMediaController::class, 'index']);
+    Route::post('/social_media', [SocialMediaController::class, 'store']);
+    Route::put('/social_media', [SocialMediaController::class, 'update']);
+    Route::delete('/social_media/{id}', [SocialMediaController::class, 'destroy']);
 
     // Barcode and User card
     Route::post('/pdf/upload', [PdfController::class, 'uploadPdf']);
