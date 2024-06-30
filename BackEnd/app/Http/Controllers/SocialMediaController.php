@@ -19,7 +19,13 @@ class SocialMediaController extends Controller
         $socialMediaData = $user->socialMedia()->first();
 
         if ($socialMediaData) {
-            return response()->json(['data' => $socialMediaData]);
+            return response()->json([
+                'data' => [
+                    'facebook' => $socialMediaData->facebook,
+                    'instagram' => $socialMediaData->instagram,
+                    'linkedIn' => $socialMediaData->linkedIn,
+                ]
+            ]);
         }
 
         return response()->json(['data' => null]);

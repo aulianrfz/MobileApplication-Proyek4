@@ -10,9 +10,12 @@ class SocialMedia extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'facebook', 'instagram', 'linkedIn'];
-
-    protected $hidden = ['facebook', 'instagram', 'linkedIn'];
+    protected $fillable = [
+        'user_id', 
+        'facebook',
+        'instagram',
+        'linkedIn'
+    ];
 
     public function setFacebookAttribute($value)
     {
@@ -23,7 +26,6 @@ class SocialMedia extends Model
     {
         return Crypt::decryptString($value);
     }
-
     public function setInstagramAttribute($value)
     {
         $this->attributes['instagram'] = Crypt::encryptString($value);
@@ -33,7 +35,6 @@ class SocialMedia extends Model
     {
         return Crypt::decryptString($value);
     }
-
     public function setLinkedInAttribute($value)
     {
         $this->attributes['linkedIn'] = Crypt::encryptString($value);
@@ -44,8 +45,5 @@ class SocialMedia extends Model
         return Crypt::decryptString($value);
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 }
+

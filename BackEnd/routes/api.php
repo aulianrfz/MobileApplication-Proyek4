@@ -16,6 +16,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\IntegrationController;
+use App\Http\Controllers\HealthController;
 
 // Auth routes
 Route::post('register', [AuthController::class, 'register']);
@@ -36,14 +37,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('profile', [AuthController::class, 'updateProfile']);
 
     // Mother
-    Route::post('mothers', [MotherController::class, 'store']);
-    Route::get('mothers', [MotherController::class, 'index']);
-    Route::put('mothers', [MotherController::class, 'update']);
+    Route::get('/mother', [MotherController::class, 'index']);
+    Route::post('/mother', [MotherController::class, 'store']);
+    Route::put('/mother', [MotherController::class, 'update']);
 
     // Father
-    Route::post('fathers', [FatherController::class, 'store']);
-    Route::get('fathers', [FatherController::class, 'index']);
-    Route::put('fathers', [FatherController::class, 'update']);
+    Route::post('/father', [FatherController::class, 'store']);
+    Route::get('/father', [FatherController::class, 'index']);
+    Route::put('/father', [FatherController::class, 'update']);
 
     // Works
     Route::post('works', [WorkController::class, 'store']);
@@ -62,6 +63,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/social_media', [SocialMediaController::class, 'update']);
     Route::delete('/social_media/{id}', [SocialMediaController::class, 'destroy']);
 
+    //health 
+    Route::get('/health', [HealthController::class, 'index']);
+    Route::post('/health', [HealthController::class, 'store']);
+    Route::put('/health', [HealthController::class, 'update']);
+    
     // Barcode and User card
     Route::post('/pdf/upload', [PdfController::class, 'uploadPdf']);
     Route::get('/pdf/download/{filename}', [PdfController::class, 'downloadPdf']);

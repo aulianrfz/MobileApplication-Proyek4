@@ -362,7 +362,10 @@ class _HomePageContentState extends State<HomePageContent> {
               ColorChangeButton(
                 text: 'Health',
                 color: const Color(0xFF44EBEB),
-                onPressed: () {},
+                onPressed: () async {
+                  await Navigator.pushNamed(context, '/health');
+                  await fetchData();
+                },
               ),
               ColorChangeButton(
                 text: 'Social Media',

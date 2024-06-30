@@ -10,16 +10,18 @@ return new class extends Migration
     {
         Schema::create('mothers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('user_id');
             $table->string('nik')->unique();
-            $table->string('name');
+            $table->string('nama');
             $table->string('address');
+            $table->date('birthday'); 
             $table->string('city');
             $table->string('nationality');
             $table->string('gender');
             $table->string('religion');
             $table->timestamps();
-            
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

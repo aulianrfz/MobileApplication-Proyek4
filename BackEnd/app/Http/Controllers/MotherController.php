@@ -10,62 +10,47 @@ class MotherController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $mother = $user->mother;
-        if (!$mother) {
-            return response()->json(['message' => 'Mother data not found'], 404);
+        $motherData = $user->mother()->first();
+
+        if ($motherData) {
+            return response()->json([
+                'data' => [
+                    'nik' => $motherData->nik,
+                    'nama' => $motherData->nama,
+                    'address' => $motherData->address,
+                    'city' => $motherData->city,
+                    'nationality' => $motherData->nationality,
+                    'gender' => $motherData->gender,
+                    'religion' => $motherData->religion,
+                    'birthday' => $motherData->birthday,
+                ]
+            ]);
         }
-        return response()->json(['data' => $mother]);
+
+        return response()->json(['data' => null]);
     }
 
     public function store(Request $request)
     {
-        \Log::info('Incoming request data: ', $request->all());
-
-        $validatedData = $request->validate([
-            'nik' => 'required|unique:mothers,nik',
-            'name' => 'required',
-            'address' => 'required',
-            'city' => 'required',
-            'nationality' => 'required',
-            'gender' => 'required',
-            'religion' => 'required',
-        ]);
-
-        \Log::info('Validated data: ', $validatedData);
-
         $user = Auth::user();
-        $mother = Mother::create(array_merge($validatedData, ['user_id' => $user->id]));
+        $motherData = $request->only(['nik', 'nama', 'birthday', 'address', 'city', 'nationality', 'gender', 'religion']);
 
-        \Log::info('Created mother data: ', $mother->toArray());
+        $user->mother()->updateOrCreate([], $motherData);
 
-        return response()->json(['message' => 'Mother data created successfully', 'data' => $mother], 201);
+        return response()->json(['message' => 'Mother data saved successfully']);
     }
 
     public function update(Request $request)
     {
         $user = Auth::user();
-        $mother = $user->mother;
+        $motherData = $request->only(['nik', 'nama', 'birthday', 'address', 'city', 'nationality', 'gender', 'religion']);
 
-        if (!$mother) {
-            return response()->json(['message' => 'Mother data not found'], 404);
+        $mother = $user->mother()->first();
+        if ($mother) {
+            $mother->update($motherData);
+            return response()->json(['message' => 'Mother data updated successfully']);
         }
 
-        $validatedData = $request->validate([
-            'nik' => 'required|unique:mothers,nik,' . $mother->id,
-            'name' => 'required',
-            'address' => 'required',
-            'city' => 'required',
-            'nationality' => 'required',
-            'gender' => 'required',
-            'religion' => 'required',
-        ]);
-
-        \Log::info('Validated data for update: ', $validatedData);
-
-        $mother->update($validatedData);
-
-        \Log::info('Updated mother data: ', $mother->toArray());
-
-        return response()->json(['message' => 'Mother data updated successfully', 'data' => $mother], 200);
+        return response()->json(['message' => 'Mother data not found'], 404);
     }
 }

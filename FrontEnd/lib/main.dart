@@ -13,6 +13,7 @@ import 'package:singpass/setting.dart';
 import 'package:singpass/ortu.dart';
 import 'package:singpass/mother.dart';
 import 'package:singpass/father.dart';
+import 'package:singpass/health.dart';
 import 'package:singpass/barcode.dart';
 import 'package:singpass/sosmed.dart';
 import 'package:singpass/forgot_password.dart';
@@ -61,6 +62,7 @@ class MyApp extends StatelessWidget {
         '/ortu': (context) => FormOrtu(),
         '/mother': (context) => MotherFormInputPage(),
         '/father': (context) => FatherFormInputPage(),
+        '/health': (context) => HealthFormInputPage(),
         '/barcode': (context) => BarcodePage(),
         '/sosmed': (context) => SocialMediaFormInputPage(),
         '/notifications': (context) => NotificationsPage(),

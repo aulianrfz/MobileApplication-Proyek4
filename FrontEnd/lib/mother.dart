@@ -3,6 +3,12 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
+void main() {
+  runApp(MaterialApp(
+    home: MotherFormInputPage(),
+  ));
+}
+
 class MotherFormInputPage extends StatefulWidget {
   @override
   _MotherFormInputPageState createState() => _MotherFormInputPageState();
@@ -11,15 +17,15 @@ class MotherFormInputPage extends StatefulWidget {
 class _MotherFormInputPageState extends State<MotherFormInputPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nikController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _namaController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _selectedCityController = TextEditingController();
-  final TextEditingController _nationalityController = TextEditingController();
-  final TextEditingController _selectedGenderController =
-      TextEditingController();
-  final TextEditingController _religionController = TextEditingController();
+  String? selectedCity;
+  String? selectedNationality;
+  String? selectedGender;
+  String? selectedReligion;
+  DateTime? selectedDate;
 
-  List<String> _cities = [
+  List<String> cities = [
     'New York',
     'Los Angeles',
     'Chicago',
@@ -76,13 +82,13 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
     'Mexico City', // Meksiko
   ];
 
-  List<String> _genders = [
+  List<String> genders = [
     'Male',
     'Female',
     'Other',
   ];
 
-  List<String> _religions = [
+  List<String> religions = [
     'Christianity',
     'Islam',
     'Hinduism',
@@ -90,7 +96,7 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
     'Judaism',
   ];
 
-  List<String> _nationalitys = [
+  List<String> nationalities = [
     'Afghanistan',
     'Albania',
     'Algeria',
@@ -218,8 +224,8 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
     'Niger',
     'Nigeria',
     'North Korea',
-    'North Macedonia (formerly Macedonia)',
-    'Norway',
+    'North Macedonia (formerly Macedonia)'
+    , 'Norway',
     'Oman',
     'Pakistan',
     'Palau',
@@ -289,15 +295,9 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
     'Zimbabwe'
   ];
 
-  String _selectedCity = '';
-  String _selectedGender = '';
-  String _selectedReligion = '';
-  String _selectedNationality = '';
-
   @override
   void initState() {
     super.initState();
-    // Fetch data when the page loads
     fetchData();
   }
 
@@ -307,7 +307,7 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/mothers'),
+        Uri.parse('http://localhost:8000/api/mother'), // Adjust the URL to your API endpoint
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -315,21 +315,22 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body)['data'];
-        setState(() {
-          _nikController.text = responseData['nik'];
-          _nameController.text = responseData['name'];
-          _addressController.text = responseData['address'];
-          _selectedCity = responseData['city'];
-          _nationalityController.text = responseData['nationality'];
-          _selectedGender = responseData['gender'];
-          _religionController.text = responseData['religion'];
-        });
+        if (responseData != null) {
+          setState(() {
+            _nikController.text = responseData['nik'] ?? '';
+            _namaController.text = responseData['nama'] ?? '';
+            _addressController.text = responseData['address'] ?? '';
+            selectedCity = responseData['city'] ?? '';
+            selectedNationality = responseData['nationality'] ?? '';
+            selectedGender = responseData['gender'] ?? '';
+            selectedReligion = responseData['religion'] ?? '';
+            selectedDate = DateTime.tryParse(responseData['birthday'] ?? '');
+          });
+        }
       } else {
-        // Handle if failed to fetch data from backend
         print('Failed to fetch data: ${response.statusCode}');
       }
     } else {
-      // Handle if token not found
       print('Token not found');
     }
   }
@@ -338,7 +339,7 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mother Information'),
+        title: Text('Family - Mother'),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -347,158 +348,106 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: TextFormField(
-                  controller: _nikController,
-                  decoration: InputDecoration(
-                    labelText: 'NIK',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                    border: InputBorder.none,
-                  ),
-                  validator: _validateNIK,
-                ),
+              _buildTextFormField(
+                controller: _nikController,
+                label: 'NIK',
+                validator: (value) => _validateInput(value, 'NIK'),
               ),
               SizedBox(height: 16.0),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                    border: InputBorder.none,
-                  ),
-                  validator: (value) => _validateInput(value, 'Name'),
-                ),
+              _buildTextFormField(
+                controller: _namaController,
+                label: 'Name',
+                validator: (value) => _validateInput(value, 'Name'),
               ),
               SizedBox(height: 16.0),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: TextFormField(
-                  controller: _addressController,
-                  decoration: InputDecoration(
-                    labelText: 'Address',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                    border: InputBorder.none,
-                  ),
-                  validator: (value) => _validateInput(value, 'Address'),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: DropdownButtonFormField(
-                  value: _selectedCity.isNotEmpty ? _selectedCity : null,
-                  items: _cities.map((String city) {
-                    return DropdownMenuItem<String>(
-                      value: city,
-                      child: Text(city),
-                    );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    setState(() {
-                      _selectedCity = value ?? '';
-                    });
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'City',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                    border: InputBorder.none,
-                  ),
-                  validator: (value) => _validateInput(value, 'City'),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: TextFormField(
-                  controller: _nationalityController,
-                  decoration: InputDecoration(
-                    labelText: 'Nationality',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                    border: InputBorder.none,
-                  ),
-                  validator: (value) => _validateInput(value, 'Nationality'),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: DropdownButtonFormField(
-                  value: _selectedGender.isNotEmpty ? _selectedGender : null,
-                  items: _genders.map((String gender) {
-                    return DropdownMenuItem<String>(
-                      value: gender,
-                      child: Text(gender),
-                    );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    setState(() {
-                      _selectedGender = value ?? '';
-                    });
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Gender',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                    border: InputBorder.none,
-                  ),
-                  validator: (value) => _validateInput(value, 'Gender'),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: TextFormField(
-                  controller: _religionController,
-                  decoration: InputDecoration(
-                    labelText: 'Religion',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                    border: InputBorder.none,
-                  ),
-                  validator: (value) => _validateInput(value, 'Religion'),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    final String? token = prefs.getString('token');
-
-                    if (token != null) {
-                      _submitForm(token);
-                    } else {
-                      // Handle the error if token is not found
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Token not found')),
-                      );
-                    }
-                  }
+              _buildDateFormField(
+                context: context,
+                label: 'Birthday',
+                selectedDate: selectedDate,
+                onDateSelected: (date) {
+                  setState(() {
+                    selectedDate = date;
+                  });
                 },
-                child: Text('Save'),
+              ),
+              SizedBox(height: 16.0),
+              _buildTextFormField(
+                controller: _addressController,
+                label: 'Address',
+                validator: (value) => _validateInput(value, 'Address'),
+              ),
+              SizedBox(height: 16.0),
+              _buildDropdownFormField(
+                value: selectedCity,
+                items: cities,
+                label: 'City',
+                onChanged: (String? value) {
+                  setState(() {
+                    selectedCity = value;
+                  });
+                },
+              ),
+              SizedBox(height: 16.0),
+              _buildDropdownFormField(
+                value: selectedNationality,
+                items: nationalities,
+                label: 'Nationality',
+                onChanged: (String? value) {
+                  setState(() {
+                    selectedNationality = value;
+                  });
+                },
+              ),
+              SizedBox(height: 16.0),
+              _buildDropdownFormField(
+                value: selectedGender,
+                items: genders,
+                label: 'Gender',
+                onChanged: (String? value) {
+                  setState(() {
+                    selectedGender = value;
+                  });
+                },
+              ),
+              SizedBox(height: 16.0),
+              _buildDropdownFormField(
+                value: selectedReligion,
+                items: religions,
+                label: 'Religion',
+                onChanged: (String? value) {
+                  setState(() {
+                    selectedReligion = value;
+                  });
+                },
+              ),
+              SizedBox(height: 24.0),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final SharedPreferences prefs = await SharedPreferences.getInstance();
+                      final String? token = prefs.getString('token');
+
+                      if (token != null) {
+                        _submitForm(token);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Token not found')),
+                        );
+                      }
+                    }
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                    child: Text('Submit', style: TextStyle(fontSize: 16.0)),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -507,92 +456,87 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
     );
   }
 
-  void _submitForm(String token) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/api/mothers'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String label,
+    required String? Function(String?) validator,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      ),
+      validator: validator,
     );
-
-    if (response.statusCode == 200) {
-      // If mother data already exists, update it
-      final response = await http.put(
-        Uri.parse('http://10.0.2.2:8000/api/mothers'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'nik': _nikController.text,
-          'name': _nameController.text,
-          'address': _addressController.text,
-          'city': _selectedCity,
-          'nationality': _nationalityController.text,
-          'gender': _selectedGender,
-          'religion': _religionController.text,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Data updated successfully')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update data')),
-        );
-        print('Failed to update data: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } else if (response.statusCode == 404) {
-      // If mother data does not exist, create it
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/mothers'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'nik': _nikController.text,
-          'name': _nameController.text,
-          'address': _addressController.text,
-          'city': _selectedCity,
-          'nationality': _nationalityController.text,
-          'gender': _selectedGender,
-          'religion': _religionController.text,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Data saved successfully')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save data')),
-        );
-        print('Failed to save data: ${response.statusCode}');
-        print('Response body: ${response.body}');
-      }
-    } else {
-      // Handle other errors
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to fetch data')),
-      );
-      print('Failed to fetch data: ${response.statusCode}');
-      print('Response body: ${response.body}');
-    }
   }
 
-  String? _validateNIK(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your NIK';
-    } else if (!RegExp(r'^\d{10,20}$').hasMatch(value)) {
-      return 'NIK must be a numeric value between 10 and 20 digits';
-    }
-    return null;
+  Widget _buildDropdownFormField({
+    required String? value,
+    required List<String> items,
+    required String label,
+    required void Function(String?) onChanged,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      items: items.map((String item) {
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      ),
+    );
+  }
+
+  Widget _buildDateFormField({
+    required BuildContext context,
+    required String label,
+    required DateTime? selectedDate,
+    required ValueChanged<DateTime> onDateSelected,
+  }) {
+    return GestureDetector(
+      onTap: () async {
+        DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: selectedDate ?? DateTime.now(),
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+        );
+        if (pickedDate != null) {
+          onDateSelected(pickedDate);
+        }
+      },
+      child: AbsorbPointer(
+        child: TextFormField(
+          controller: TextEditingController(
+            text: selectedDate != null
+                ? "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}"
+                : '',
+          ),
+          decoration: InputDecoration(
+            labelText: label,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+            suffixIcon: Icon(Icons.calendar_today),
+          ),
+        ),
+      ),
+    );
   }
 
   String? _validateInput(String? value, String fieldName) {
@@ -601,10 +545,36 @@ class _MotherFormInputPageState extends State<MotherFormInputPage> {
     }
     return null;
   }
-}
 
-void main() {
-  runApp(MaterialApp(
-    home: MotherFormInputPage(),
-  ));
+  void _submitForm(String token) async {
+    final Map<String, dynamic> motherData = {
+      'nik': _nikController.text.trim(),
+      'nama': _namaController.text.trim(),
+      'birthday': selectedDate?.toIso8601String(),
+      'address': _addressController.text.trim(),
+      'city': selectedCity,
+      'nationality': selectedNationality,
+      'gender': selectedGender,
+      'religion': selectedReligion,
+    };
+
+    final response = await http.post(
+      Uri.parse('http://localhost:8000/api/mother'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(motherData),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Form submitted successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to submit form')),
+      );
+    }
+  }
 }

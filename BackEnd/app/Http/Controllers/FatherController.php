@@ -11,54 +11,47 @@ class FatherController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $father = $user->father;
-        if (!$father) {
-            return response()->json(['message' => 'Father data not found'], 404);
+        $fatherData = $user->father()->first();
+
+        if ($fatherData) {
+            return response()->json([
+                'data' => [
+                    'nik' => $fatherData->nik,
+                    'nama' => $fatherData->nama,
+                    'address' => $fatherData->address,
+                    'city' => $fatherData->city,
+                    'nationality' => $fatherData->nationality,
+                    'gender' => $fatherData->gender,
+                    'religion' => $fatherData->religion,
+                    'birthday' => $fatherData->birthday,
+                ]
+            ]);
         }
-        return response()->json(['data' => $father]);
+
+        return response()->json(['data' => null]);
     }
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'nik' => 'required|unique:fathers,nik',
-            'name' => 'required',
-            'address' => 'required',
-            'city' => 'required',
-            'nationality' => 'required',
-            'gender' => 'required',
-            'religion' => 'required',
-        ]);
-
         $user = Auth::user();
-        $father = Father::create(array_merge($validatedData, ['user_id' => $user->id]));
+        $fatherData = $request->only(['nik', 'nama', 'birthday', 'address', 'city', 'nationality', 'gender', 'religion']);
 
-        return response()->json(['message' => 'Father data created successfully', 'data' => $father], 201);
+        $user->father()->updateOrCreate([], $fatherData);
+
+        return response()->json(['message' => 'Father data saved successfully']);
     }
 
     public function update(Request $request)
     {
         $user = Auth::user();
-        $father = $user->father;
+        $fatherData = $request->only(['nik', 'nama', 'birthday', 'address', 'city', 'nationality', 'gender', 'religion']);
 
-        if (!$father) {
-            return response()->json(['message' => 'Father data not found'], 404);
+        $father = $user->father()->first();
+        if ($father) {
+            $father->update($fatherData);
+            return response()->json(['message' => 'Father data updated successfully']);
         }
 
-        $validatedData = $request->validate([
-            'nik' => 'required|unique:fathers,nik,' . $father->id,
-            'name' => 'required',
-            'address' => 'required',
-            'city' => 'required',
-            'nationality' => 'required',
-            'gender' => 'required',
-            'religion' => 'required',
-        ]);
-
-        $father->update($validatedData);
-
-        return response()->json(['message' => 'Father data updated successfully', 'data' => $father], 200);
+        return response()->json(['message' => 'Father data not found'], 404);
     }
-
-    // You can implement 'show' and 'destroy' methods similarly if needed
 }

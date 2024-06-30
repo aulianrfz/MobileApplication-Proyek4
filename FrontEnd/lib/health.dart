@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: SocialMediaFormInputPage(),
+    home: HealthFormInputPage(),
   ));
 }
 
-class SocialMediaFormInputPage extends StatefulWidget {
+class HealthFormInputPage extends StatefulWidget {
   @override
-  _SocialMediaFormInputPageState createState() => _SocialMediaFormInputPageState();
+  _HealthFormInputPageState createState() => _HealthFormInputPageState();
 }
 
-class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
+class _HealthFormInputPageState extends State<HealthFormInputPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _facebookController = TextEditingController();
-  final TextEditingController _instagramController = TextEditingController();
-  final TextEditingController _linkedInController = TextEditingController();
-
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
+  final TextEditingController _bloodPressureController =
+  TextEditingController();
+  final TextEditingController _bloodSugarController = TextEditingController();
+  final TextEditingController _heartRateController = TextEditingController();
 
   @override
   void initState() {
@@ -35,7 +33,7 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
 
     if (token != null) {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/api/social_media'),
+        Uri.parse('http://localhost:8000/api/health'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -45,9 +43,9 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
         final responseData = json.decode(response.body)['data'];
         if (responseData != null) {
           setState(() {
-            _facebookController.text = responseData['facebook'] ?? '';
-            _instagramController.text = responseData['instagram'] ?? '';
-            _linkedInController.text = responseData['linkedIn'] ?? '';
+            _bloodPressureController.text = responseData['bloodPressure'] ?? '';
+            _bloodSugarController.text = responseData['bloodSugar'] ?? '';
+            _heartRateController.text = responseData['heartRate'] ?? '';
           });
         }
       } else {
@@ -62,7 +60,7 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Social Media Information'),
+        title: Text('Health Information'),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -72,29 +70,33 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _buildTextFormField(
-                controller: _facebookController,
-                label: 'Facebook Username',
-                validator: (value) => _validateInput(value, 'Facebook Username'),
+                controller: _bloodPressureController,
+                label: 'Blood Pressure',
+                validator: (value) =>
+                    _validateInput(value, 'Blood Pressure'),
               ),
               SizedBox(height: 16.0),
               _buildTextFormField(
-                controller: _instagramController,
-                label: 'Instagram',
+                controller: _bloodSugarController,
+                label: 'Blood Sugar Level',
                 obscureText: false,
-                validator: (value) => _validateInput(value, 'Instagram'),
+                validator: (value) =>
+                    _validateInput(value, 'Blood Sugar Level'),
               ),
               SizedBox(height: 16.0),
               _buildTextFormField(
-                controller: _linkedInController,
-                label: 'LinkedIn',
-                validator: (value) => _validateInput(value, 'LinkedIn '),
+                controller: _heartRateController,
+                label: 'Heart Rate',
+                validator: (value) =>
+                    _validateInput(value, 'Heart Rate'),
               ),
               SizedBox(height: 24.0),
               Center(
                 child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      final SharedPreferences prefs = await SharedPreferences.getInstance();
+                      final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
                       final String? token = prefs.getString('token');
 
                       if (token != null) {
@@ -107,7 +109,8 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
                     }
                   },
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 24.0),
+                    padding: EdgeInsets.symmetric(
+                        vertical: 14.0, horizontal: 24.0),
                     child: Text('Save', style: TextStyle(fontSize: 16.0)),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -138,7 +141,8 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),
-        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+        contentPadding:
+        EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
       ),
       validator: validator,
     );
@@ -152,13 +156,13 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
   }
 
   void _submitForm(String token) async {
-    final Map<String, dynamic> socialMediaData = {
-      'facebook': _facebookController.text.trim(),
-      'instagram': _instagramController.text.trim(),
-      'linkedIn': _linkedInController.text.trim(),
+    final Map<String, dynamic> healthData = {
+      'bloodPressure': _bloodPressureController.text.trim(),
+      'bloodSugar': _bloodSugarController.text.trim(),
+      'heartRate': _heartRateController.text.trim(),
     };
 
-    final Uri url = Uri.parse('http://localhost:8000/api/social_media');
+    final Uri url = Uri.parse('http://localhost:8000/api/health');
 
     final response = await http.post(
       url,
@@ -166,7 +170,7 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
-      body: json.encode(socialMediaData),
+      body: json.encode(healthData),
     );
 
     if (response.statusCode == 200) {
@@ -174,9 +178,9 @@ class _SocialMediaFormInputPageState extends State<SocialMediaFormInputPage> {
         SnackBar(content: Text('Data saved successfully')),
       );
       // Clear form fields after successful submission
-      _facebookController.clear();
-      _instagramController.clear();
-      _linkedInController.clear();
+      _bloodPressureController.clear();
+      _bloodSugarController.clear();
+      _heartRateController.clear();
       // Update UI with new data after successful save
       fetchData(); // optionally, update UI immediately
     } else {
